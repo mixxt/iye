@@ -3,17 +3,21 @@
     <title>IYE</title>
     <style>
       /* GENERAL */
+      * {
+        box-sizing: border-box;
+      }
+
       body {
         font-family: sans-serif;
-        font-size: 0.7em;
         margin: 0;
-        margin-top: 60px;
+        padding-top: 60px;
+        line-height: 1.5;
       }
 
       /* HEADER */
       .header {
         margin: 0;
-        padding: 1em;
+        padding: .5em 1em;
         background-color: #fff;
         z-index: 999 !important;
         position: fixed;
@@ -35,6 +39,7 @@
 
       .header h1 {
         margin-right: 2em;
+        font-size: 24px;
       }
 
       .pull-right {
@@ -42,13 +47,64 @@
         padding-right:20px;
       }
 
+      .btn {
+        background: rgb(0, 90, 70);
+        padding: .25rem .5rem;
+        color: white;
+        font-size: 16px;
+        border-radius: 5px;
+        text-decoration: none;
+        border: 0;
+        line-height: 1.5;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: rgba(0, 90, 70, 0.75);
+        box-shadow: rgb(0, 90, 70) 0 0 5px inset;
+      }
+
+      .btn-small {
+        font-size: 12px;
+      }
+      .btn-primary {
+        background-color: rgba(25,25,112,1);
+      }
+      .btn-primary:hover {
+        background-color: rgba(25,25,112, 0.75);
+        box-shadow: rgba(25,25,112,1) 0 0 5px inset;
+      }
+
+      .btn-danger {
+        background-color: rgba(255, 69, 0, 1);
+      }
+      .btn-danger:hover {
+        background-color: rgba(255, 69, 0, 0.75);
+        box-shadow: rgba(255, 69, 0, 1) 0 0 5px inset;
+      }
+
+      .btn-text {
+        background: none;
+        color: blue;
+      }
+      .btn-text:hover {
+        background: none;
+        box-shadow: none;
+      }
+
       /* TRANSLATIONS */
-      table.keys {
+      table {
         width: 100%;
       }
 
-      table.keys .key {
-        padding-left: 0.5em;
+      table td {
+        padding: 0 1em;
+      }
+
+      table.keys .delete-button {
+        visibility: hidden;
+      }
+      table.keys tr:hover .delete-button {
+        visibility: visible;
       }
 
       table.keys tr.translation > td {
@@ -73,14 +129,6 @@
       }
 
       /* CATEGORIES */
-
-      table.categories {
-        width: 100%;
-      }
-
-      table.categories .key {
-        padding-left: 0.5em;
-      }
 
       table.categories tr.category a {
         text-decoration: none;
@@ -123,12 +171,12 @@
       <form action="<%= root_path %>" method="get">
         <label>
           Key:
-          <input name="filters[key]" type="text" value="<%= filters["key"] %>" />
+          <input name="filters[key]" type="text" value="<%= ERB::Util.html_escape filters["key"] %>" />
         </label>
 
         <label>
           Text:
-          <input name="filters[text]" type="text" value="<%= filters["text"] %>" />
+          <input name="filters[text]" type="text" value="<%= ERB::Util.html_escape filters["text"] %>" />
         </label>
 
         <label>
@@ -140,23 +188,20 @@
           Empty
         </label>
 
-        <input type="submit" value="Filter" />
+        <input class="btn btn-primary btn-small" type="submit" value="Apply Filter" />
       </form>
 
-      <form action="<%= root_path %>" method="get">
-        <input type="submit" value="Clear" />
-      </form>
-
-      <div class="pull-right">
-        <form action="<%= root_path %>new" method="get">
-          <input type="hidden" name="key" value="<%= filters['key'] %>" />
-          <input type="submit" value="New" />
+      <% if filters.any? %>
+        <form action="<%= root_path %>" method="get">
+          <input class="btn btn-text btn-small" type="submit" value="Clear Filter" />
         </form>
-      </div>
+      <% end %>
+
+      <a class='btn pull-right' href="<%= root_path %>new?key=<%= ERB::Util.html_escape filters['key'] %>">New Translation</a>
     </div>
 
     <div class="content">
-      <%= content %>
+      <%= yield %>
     </div>
   </body>
 </html>

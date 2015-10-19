@@ -24,8 +24,8 @@ module I18nYamlEditor
       @file_radixes = Set.new
     end
 
-    def add_translation translation
-      if existing = self.translations[translation.name]
+    def add_translation(translation)
+      if (existing = self.translations[translation.name])
         message = "#{translation.name} detected in #{translation.file} and #{existing.file}"
         raise DuplicateTranslationError.new(message)
       end
@@ -42,11 +42,11 @@ module I18nYamlEditor
       category.add_key(key)
     end
 
-    def add_key key
+    def add_key(key)
       self.keys[key.name] = key
     end
 
-    def add_locale locale
+    def add_locale(locale)
       self.locales.add(locale)
     end
 
@@ -54,7 +54,7 @@ module I18nYamlEditor
       self.file_radixes.add(file_radix)
     end
 
-    def filter_keys options={}
+    def filter_keys(options={})
       filters = []
       if options.has_key?(:key)
         filters << lambda {|k| k.name =~ options[:key]}
@@ -97,7 +97,7 @@ module I18nYamlEditor
       }
     end
 
-    def from_yaml yaml, file=nil
+    def from_yaml(yaml, file=nil)
       translations = flatten_hash(yaml)
       translations.each {|name, text|
         translation = Translation.new(name: name, text: text, file: file)

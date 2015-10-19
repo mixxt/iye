@@ -2,8 +2,8 @@
 da:
   session:
     new:
-      email: ! 'E-mail:'
-      password:
+      email: 'E-mail:'
+      password: 
       login: Log ind
       remember_me: Husk mig
       forgot: Har du glemt dit kodeord?
@@ -17,4 +17,4 @@ da:
   new:
     email: EMAIL
     password: pwd
-    login: log in
+    login: log inn
