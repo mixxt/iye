@@ -1,11 +1,11 @@
 # encoding: utf-8
 
-require "psych"
-require "yaml"
+require 'psych'
+require 'yaml'
 
-require "i18n_yaml_editor"
-require "i18n_yaml_editor/web"
-require "i18n_yaml_editor/store"
+require 'i18n_yaml_editor'
+require 'i18n_yaml_editor/web'
+require 'i18n_yaml_editor/store'
 
 module I18nYamlEditor
   class App
@@ -20,18 +20,18 @@ module I18nYamlEditor
     end
 
     def load_translations
-      files = Dir[full_path + "/**/*.yml"]
-      files.each {|file|
+      files = Dir[full_path + '/**/*.yml']
+      files.each do |file|
         yaml = YAML.load_file(file)
         store.from_yaml(yaml, file)
-      }
+      end
     end
 
     def save_translations
       files = store.to_yaml
-      files.each {|file, yaml|
-        File.open(file, "w", encoding: "utf-8") {|f| f << yaml.to_yaml}
-      }
+      files.each do |file, yaml|
+        File.open(file, 'w', encoding: 'utf-8') { |f| f << yaml.to_yaml }
+      end
     end
   end
 end

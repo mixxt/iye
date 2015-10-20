@@ -14,11 +14,13 @@ module I18nYamlEditor
   class Web < Hobbit::Base
     include Hobbit::Render
 
-    # settings[:render][:template_engine] = "erb"
-    # settings[:render][:views] = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "views"))
-
+    use Rack::Static, urls: ['/stylesheets'], root: I18nYamlEditor.root.join('public')
     use Rack::MethodOverride
     use Rack::ShowExceptions
+
+    def views_path
+      @views_path ||= I18nYamlEditor.root.join('views')
+    end
 
     def default_layout
       "#{views_path}/layout.#{template_engine}"
@@ -41,6 +43,10 @@ module I18nYamlEditor
       env['iye.app'] || raise('Request outside of iye app context; please use I18nYamlEditor#app_stack(iye_app)')
     end
 
+    ##
+    # Helper method to access filters param
+    #
+    # @return [Hash]
     def filters
       request.params['filters'] || {}
     end
@@ -66,9 +72,9 @@ module I18nYamlEditor
       render('new.html')
     end
 
-    # create
+    # create single key
     post '/create' do
-      key  = request.params['key']
+      key = request.params['key']
       file_radix = request.params['file_radix']
 
       app.store.locales.each do |locale|
@@ -78,7 +84,7 @@ module I18nYamlEditor
         if app.store.translations[name]
           app.store.translations[name].text = text
         else
-          app.store.add_translation Translation.new(name:name, file:file, text:text)
+          app.store.add_translation Translation.new(name: name, file: file, text: text)
         end
       end
 
@@ -106,12 +112,12 @@ module I18nYamlEditor
       end
     end
 
-    # update
+    # mass update
     post '/update' do
       if (translations = request.params['translations'])
-        translations.each {|name, text|
+        translations.each do |name, text|
           app.store.translations[name].text = text
-        }
+        end
         app.save_translations
       end
 
