@@ -34,7 +34,7 @@ module I18nYamlEditor
 
     def save_files(raw_data)
       raw_data.map do |file, data|
-        File.open(file, 'w', encoding: 'utf-8') { |f| f << data.to_yaml }
+        File.open(file, 'w', encoding: 'utf-8') { |f| f << data.to_yaml(line_width: -1) }
       end
     end
   end
