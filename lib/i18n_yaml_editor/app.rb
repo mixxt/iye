@@ -1,4 +1,3 @@
-require 'psych'
 require 'yaml'
 
 require 'i18n_yaml_editor'
