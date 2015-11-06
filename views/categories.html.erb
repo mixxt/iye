@@ -1,5 +1,5 @@
 <table class="categories" cellspacing="0">
-  <% categories.each do |name, category| %>
+  <% categories.each do |category| %>
     <tr class="category <%= "incomplete" unless category.complete? %>">
       <td class="key">
         <a class="text" href="<%= root_path %>?filters[key]=<%= Rack::Utils.escape("^#{category.name}") %>"><%= category.name %></a>

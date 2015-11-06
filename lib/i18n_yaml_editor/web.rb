@@ -41,6 +41,10 @@ module I18nYamlEditor
       env['iye.app'] || raise('Request outside of iye app context; please use I18nYamlEditor#app_stack(iye_app)')
     end
 
+    def store
+      app.store
+    end
+
     ##
     # Helper method to access filters param
     #
@@ -62,7 +66,15 @@ module I18nYamlEditor
     end
 
     get '/debug' do
-      render('debug.html', translations: app.store.translations.values)
+      require 'json'
+
+      response.headers['Content-Type'] = 'application/json; charset=utf-8'
+      {
+          locales: store.locale_repository.all.map(&:inspect),
+          categories: store.category_repository.all.map(&:inspect),
+          keys: store.key_repository.all.map(&:inspect),
+          translations: store.translation_repository.all.map(&:inspect)
+      }.to_json
     end
 
     # new
@@ -97,15 +109,15 @@ module I18nYamlEditor
       if (filters = request.params['filters'])
         options = {}
         options[:key] = /#{filters['key']}/ if filters['key'].to_s.size > 0
-        options[:text] = /#{filters['text']}/i if filters['text'].to_s.size > 0
-        options[:complete] = false if filters['incomplete'] == 'on'
-        options[:empty] = true if filters['empty'] == 'on'
+        # options[:text] = /#{filters['text']}/i if filters['text'].to_s.size > 0
+        # options[:complete] = false if filters['incomplete'] == 'on'
+        # options[:empty] = true if filters['empty'] == 'on'
 
-        keys = app.store.filter_keys(options)
+        keys = store.key_repository.filter(options)
 
-        render('translations.html', keys: keys,)
+        render('translations.html', keys: keys)
       else
-        categories = app.store.categories.sort
+        categories = store.category_repository.all
         render('categories.html', categories: categories)
       end
     end

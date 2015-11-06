@@ -4,26 +4,26 @@
   <% end %>
 
   <table class="keys" cellspacing="0">
-    <% keys.each do |name, key| %>
+    <% keys.each do |key| %>
       <tr class="translation
-        <%= "incomplete" unless key.complete? %>
-        <%= "empty" if key.empty? %>
+        <%= "incomplete" unless store.key_complete?(key) %>
+        <%= "empty" if store.key_empty?(key) %>
         ">
         <td class="key">
           <span class="text"><%= key.name %></span>
         </td>
         <td class="translations">
           <table class="locales">
-            <% key.translations.sort_by(&:locale).each do |translation| %>
+            <% store.translation_repository.all_for_key(key).sort_by(&:locale_id).each do |translation| %>
               <tr>
-                <td class="locale"><%= translation.locale %>:</td>
+                <td class="locale"><%= translation.locale_id %>:</td>
                 <td class="value">
-                  <% if translation.text.nil? || translation.text.is_a?(String) %>
-                    <textarea cols=80 rows=<%= translation.number_of_lines %> name="translations[<%= translation.name %>]" dir="auto"><%= Rack::Utils.escape_html translation.text %></textarea>
+                  <% if translation.stringish? %>
+                    <textarea cols=80 rows=<%= translation.number_of_lines %> name="translations[<%= translation.id %>]" dir="auto"><%= Rack::Utils.escape_html translation.text %></textarea>
                   <% else %>
                     [read only]
-                    <%= translation.text.class.name %>
-                    <%= Rack::Utils.escape_html translation.text.inspect %>
+                    <%= translation[:text].class.name %>
+                    <%= Rack::Utils.escape_html translation[:text].inspect %>
                   <% end %>
                 </td>
               </tr>
@@ -31,7 +31,7 @@
           </table>
         </td>
         <td width="1%">
-          <a href="<%= root_path %>keys/<%= ERB::Util.html_escape name %>/destroy" class='btn btn-danger btn-small delete-button'>Delete</a>
+          <a href="<%= root_path %>keys/<%= ERB::Util.html_escape key.id %>/destroy" class='btn btn-danger btn-small delete-button'>Delete</a>
         </td>
       </tr>
     <% end %>

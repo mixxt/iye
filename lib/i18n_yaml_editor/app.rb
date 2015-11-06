@@ -16,7 +16,6 @@ module I18nYamlEditor
       @store = Store.new
 
       load_translations
-      store.create_missing_keys
     end
 
     def load_translations

@@ -1,7 +1,6 @@
 require 'pathname'
 
 module I18nYamlEditor
-  LOCALE_PLACEHOLDER = '%LOCALE%'
 
   ##
   # Root path of gem
@@ -13,10 +12,15 @@ module I18nYamlEditor
 
 end
 
-require 'i18n_yaml_editor/app'
-require 'i18n_yaml_editor/category'
-require 'i18n_yaml_editor/key'
-require 'i18n_yaml_editor/store'
+require 'i18n_yaml_editor/entities/category'
+require 'i18n_yaml_editor/entities/key'
+require 'i18n_yaml_editor/entities/locale'
+require 'i18n_yaml_editor/entities/translation'
+require 'i18n_yaml_editor/repositories/category_repository'
+require 'i18n_yaml_editor/repositories/key_repository'
+require 'i18n_yaml_editor/repositories/locale_repository'
+require 'i18n_yaml_editor/repositories/translation_repository'
 require 'i18n_yaml_editor/transformation'
-require 'i18n_yaml_editor/translation'
+require 'i18n_yaml_editor/app'
+require 'i18n_yaml_editor/store'
 require 'i18n_yaml_editor/web'
