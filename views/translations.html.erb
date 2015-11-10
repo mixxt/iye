@@ -1,5 +1,5 @@
 <form id="updateform" action="<%= root_path %>update" method="post">
-  <% filters.each do |filter, value| %>
+  <% filter_params.each do |filter, value| %>
     <input name="filters[<%= filter %>]" type="hidden" value="<%= value %>"/>
   <% end %>
 
@@ -45,6 +45,6 @@
 <% if keys.empty? %>
   <h3>
     Could not find any keys for your search.
-    <a href="<%= root_path %>new?key=<%= filters['key'] %>">Create a new one</a>
+    <a href="<%= root_path %>new?key=<%= filter_params['key'] %>">Create a new one</a>
   </h3>
 <% end %>

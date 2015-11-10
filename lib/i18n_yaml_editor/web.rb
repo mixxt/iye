@@ -1,5 +1,5 @@
-require 'rack'
 require 'hobbit'
+require 'rack'
 require 'hobbit/render'
 require 'tilt/erb'
 
@@ -14,7 +14,6 @@ module I18nYamlEditor
 
     use Rack::Static, urls: ['/stylesheets'], root: I18nYamlEditor.root.join('public')
     use Rack::MethodOverride
-    use Rack::ShowExceptions
 
     def views_path
       @views_path ||= I18nYamlEditor.root.join('views')
@@ -33,6 +32,11 @@ module I18nYamlEditor
       "#{request.script_name}/"
     end
 
+    def show_key_path(key)
+      "#{root_path}?#{Rack::Utils.build_nested_query(filters: { key: "^#{key.id}" })}"
+    end
+    alias_method :show_category_path, :show_key_path
+
     ##
     # IYE app context
     #
@@ -49,7 +53,7 @@ module I18nYamlEditor
     # Helper method to access filters param
     #
     # @return [Hash]
-    def filters
+    def filter_params
       request.params['filters'] || {}
     end
 
@@ -84,41 +88,34 @@ module I18nYamlEditor
 
     # create single key
     post '/create' do
-      key = request.params['key']
-      file_radix = request.params['file_radix']
+      key_params = request.params['key']
+      translations = key_params.delete('translations')
 
-      app.store.locales.each do |locale|
-        name = "#{locale}.#{key}"
-        file = Transformation.sub_locale_in_path(file_radix, LOCALE_PLACEHOLDER, locale)
-        text = request.params["text_#{locale}"]
-        if app.store.translations[name]
-          app.store.translations[name].text = text
-        else
-          app.store.add_translation Translation.new(name: name, file: file, text: text)
-        end
+      key = Key.new(id: key_params.fetch('id'), path_template: key_params.fetch('path_template'))
+      store.key_repository.create(key)
+
+      translations.each do |locale_id, text|
+        locale = store.locale_repository.find(locale_id)
+        store.translation_repository.persist Translation.new(locale_id: locale.id, key_id: key.id, value: text)
       end
 
-      app.save_translations
-
-      categories = app.store.categories.sort
-      render('categories.html', categories: categories)
+      response.redirect show_key_path(key)
     end
 
     # index
     get '/' do
       if (filters = request.params['filters'])
         options = {}
-        options[:key] = /#{filters['key']}/ if filters['key'].to_s.size > 0
-        # options[:text] = /#{filters['text']}/i if filters['text'].to_s.size > 0
-        # options[:complete] = false if filters['incomplete'] == 'on'
-        # options[:empty] = true if filters['empty'] == 'on'
+        options[:key] = /#{filters['key']}/ if String(filters['key']).length > 0
+        options[:text] = /#{filters['text']}/i if String(filters['text']).length > 0
+        options[:complete] = false if filters['incomplete'] == 'on'
+        options[:empty] = true if filters['empty'] == 'on'
 
-        keys = store.filtered_keys(options)
+        keys = store.filter_keys(options)
 
         render('translations.html', keys: keys)
       else
-        categories = store.category_repository.all
-        render('categories.html', categories: categories)
+        render('categories.html', categories: store.categories)
       end
     end
 
@@ -126,31 +123,29 @@ module I18nYamlEditor
     post '/update' do
       if (translations = request.params['translations'])
         translations.each do |name, text|
-          app.store.translations[name].text = text
+          store.upsert_raw_translation name, text
         end
-        app.save_translations
+        app.persist_store
       end
 
-      response.redirect "#{root_path}?#{Rack::Utils.build_nested_query(filters: filters)}"
+      response.redirect "#{root_path}?#{Rack::Utils.build_nested_query(filter_params: filter_params)}"
     end
 
     # confirm key deletion
-    get '/keys/:name/destroy' do
-      name = request.params[:name]
-      key = app.store.keys.fetch(name)
+    get '/keys/:id/destroy' do
+      key = store.key_repository.find(request.params[:id])
 
-      render('destroy.html', key: key)
+      render('destroy.html', key: key, translations: store.translations_for_key(key))
     end
 
     # delete key
-    delete '/keys/:name' do
-      name = request.params[:name]
-      key = app.store.keys.fetch(name)
-      key.translations.each do |translation|
-        app.store.translations.delete(translation.name)
+    delete '/keys/:id' do
+      key = store.key_repository.find(request.params[:id])
+
+      store.translations_for_key(key).each do |translation|
+        store.translation_repository.delete(translation)
       end
-      app.store.keys.delete(name)
-      app.store.categories.delete(name) if key.category == key.name
+      store.key_repository.delete(key)
 
       response.redirect(root_path)
     end

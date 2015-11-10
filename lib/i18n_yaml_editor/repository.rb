@@ -34,17 +34,37 @@ module I18nYamlEditor
       raise "Duplicate key error: #{entity.inspect}" if table.key?(entity[:id])
 
       _creating(entity) do
-        _persisting(entity) do
+        _changing(entity) do
           table[entity[:id]] = entity.to_h.clone
         end
       end
     end
 
     def persist(entity)
-      ensure_id!(entity)
+      if exists?(entity)
+        update(entity)
+      else
+        create(entity)
+      end
+    end
 
-      _persisting(entity) do
-        table[entity[:id]] = table.fetch(entity[:id], {}).merge(entity.to_h)
+    def update(entity)
+      ensure_exists!(entity)
+
+      _updating(entity) do
+        _changing(entity) do
+          table[entity[:id]] = table.fetch(entity[:id], {}).merge(entity.to_h)
+        end
+      end
+    end
+
+    def delete(entity)
+      ensure_exists!(entity)
+
+      _deleting(entity) do
+        _changing(entity) do
+          table.delete(entity[:id])
+        end
       end
     end
 
@@ -62,12 +82,25 @@ module I18nYamlEditor
       yield
     end
 
-    def _persisting(entity)
+    def _updating(entity)
+      yield
+    end
+
+    def _deleting(entity)
+      yield
+    end
+
+    def _changing(entity)
       yield
     end
 
     def ensure_id!(entity)
       raise "id must not be nil on entity #{entity.inspect}" unless entity[:id]
+    end
+
+    def ensure_exists!(entity)
+      ensure_id!(entity)
+      raise "given entity does not exist in repository. #{entity.inspect}" unless table.key?(entity.id)
     end
 
     private

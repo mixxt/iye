@@ -7,10 +7,18 @@ module I18nYamlEditor
     attr_accessor :key_repository, :translation_repository, :locale_repository, :category_repository
 
     def initialize
-      @locale_repository = LocaleRepository.new(self)
       @category_repository = CategoryRepository.new(self)
       @key_repository = KeyRepository.new(self)
+      @locale_repository = LocaleRepository.new(self)
       @translation_repository = TranslationRepository.new(self)
+    end
+
+    def locales
+      locale_repository.all
+    end
+
+    def categories
+      category_repository.all
     end
 
     def translations
@@ -35,6 +43,10 @@ module I18nYamlEditor
       translation_repository.all_for_key(key)
     end
 
+    def path_templates
+      key_repository.unique_path_templates
+    end
+
     def from_raw(raw)
       raw.each do |path, data|
         flatten_hash(data).each do |full_key, text|
@@ -44,16 +56,15 @@ module I18nYamlEditor
     end
 
     def add_raw_translation(full_key, value = nil, path = nil)
-      raw_locale, raw_key = full_key.split('.', 2)
+      _convert_raw_translation(full_key, value, path) do |translation|
+        translation_repository.create(translation)
+      end
+    end
 
-      locale = Locale.new(id: raw_locale)
-      path_template = path ? locale_path_to_template(path, raw_locale) : nil
-      key = Key.new(id: raw_key, path_template: path_template)
-      translation = Translation.new(key_id: key.id, locale_id: locale.id, value: value)
-
-      locale_repository.persist(locale) unless locale_repository.exists?(locale)
-      key_repository.persist(key) unless key_repository.exists?(key)
-      translation_repository.create(translation)
+    def upsert_raw_translation(full_key, value = nil)
+      _convert_raw_translation(full_key, value) do |translation|
+        translation_repository.persist(translation)
+      end
     end
 
     def to_raw
@@ -68,5 +79,22 @@ module I18nYamlEditor
         end
       end
     end
+
+    private
+
+    def _convert_raw_translation(full_key, value = nil, path = nil)
+      raw_locale, raw_key = full_key.split('.', 2)
+
+      locale = Locale.new(id: raw_locale)
+      path_template = path ? locale_path_to_template(path, raw_locale) : nil
+      key = Key.new(id: raw_key, path_template: path_template)
+      translation = Translation.new(key_id: key.id, locale_id: locale.id, value: value)
+
+      locale_repository.persist(locale) unless locale_repository.exists?(locale)
+      key_repository.persist(key) unless key_repository.exists?(key)
+
+      yield(translation)
+    end
+
   end
 end

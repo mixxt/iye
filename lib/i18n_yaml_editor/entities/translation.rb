@@ -8,7 +8,7 @@ module I18nYamlEditor
     alias_method :name, :id
 
     def initialize(args)
-      super(args.merge(id: args.values_at(:locale_id, :key_id).join('.')))
+      super({ id: args.values_at(:locale_id, :key_id).join('.') }.merge(args))
     end
 
     def text

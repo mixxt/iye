@@ -5,5 +5,7 @@ module I18nYamlEditor
 
     attributes :id
 
+    alias_method :name, :id
+
   end
 end

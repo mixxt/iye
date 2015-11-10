@@ -11,33 +11,33 @@
       <form action="<%= root_path %>" method="get">
         <label>
           Key:
-          <input name="filters[key]" type="text" value="<%= ERB::Util.html_escape filters["key"] %>" />
+          <input name="filters[key]" type="text" value="<%= ERB::Util.html_escape filter_params["key"] %>" />
         </label>
 
         <label>
           Text:
-          <input name="filters[text]" type="text" value="<%= ERB::Util.html_escape filters["text"] %>" />
+          <input name="filters[text]" type="text" value="<%= ERB::Util.html_escape filter_params["text"] %>" />
         </label>
 
         <label>
-          <input name="filters[incomplete]" type="checkbox" <%= "checked=checked" if filters["incomplete"] == "on" %> />
+          <input name="filters[incomplete]" type="checkbox" <%= "checked=checked" if filter_params["incomplete"] == "on" %> />
           Incomplete
         </label>
         <label>
-          <input name="filters[empty]" type="checkbox" <%= "checked=checked" if filters["empty"] == "on" %> />
+          <input name="filters[empty]" type="checkbox" <%= "checked=checked" if filter_params["empty"] == "on" %> />
           Empty
         </label>
 
         <input class="btn btn-primary btn-small" type="submit" value="Apply Filter" />
       </form>
 
-      <% if filters.any? %>
+      <% if filter_params.any? %>
         <form action="<%= root_path %>" method="get">
           <input class="btn btn-text btn-small" type="submit" value="Clear Filter" />
         </form>
       <% end %>
 
-      <a class='btn pull-right' href="<%= root_path %>new?key=<%= ERB::Util.html_escape filters['key'] %>">New Translation</a>
+      <a class='btn pull-right' href="<%= root_path %>new?key=<%= ERB::Util.html_escape filter_params['key'] %>">New Translation</a>
     </div>
 
     <div class="content">

@@ -7,7 +7,7 @@ module I18nYamlEditor
       Key
     end
 
-    def _persisting(key)
+    def _changing(entity)
       store.category_repository.clear_cache
       yield
     end
@@ -25,6 +25,10 @@ module I18nYamlEditor
       all.select do |key|
         filters.all?{ |f| f.call(key) }
       end
+    end
+
+    def unique_path_templates
+      all.map(&:path_template).reduce(Set.new, &:add)
     end
 
   end
