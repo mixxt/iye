@@ -97,6 +97,7 @@ module I18nYamlEditor
       store.key_repository.create(key)
 
       translations.each do |locale_id, text|
+        text = nil if text.empty?
         locale = store.locale_repository.find(locale_id)
         store.translation_repository.persist Translation.new(locale_id: locale.id, key_id: key.id, value: text)
       end
@@ -127,6 +128,7 @@ module I18nYamlEditor
     post '/update' do
       if (translations = request.params['translations'])
         translations.each do |name, text|
+          text = nil if text.empty?
           store.upsert_raw_translation name, text
         end
         app.persist_store
