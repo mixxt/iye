@@ -134,7 +134,7 @@ module I18nYamlEditor
         app.persist_store
       end
 
-      response.redirect root_path(filter: filter_params)
+      response.redirect root_path(filters: filter_params)
     end
 
     # confirm key deletion

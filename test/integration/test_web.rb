@@ -65,6 +65,8 @@ class TestWeb < CapybaraTest
     assert_equal 2, store.translation_repository.count
     assert_equal 'geänderter Wert', store.translation_repository.find('de.key').value
     assert_equal 'changed value', store.translation_repository.find('en.key').value
+
+    assert_equal 'http://iye.test/?filters[key]=%5Ekey', current_url
   end
 
   def test_key_and_translation_creation
