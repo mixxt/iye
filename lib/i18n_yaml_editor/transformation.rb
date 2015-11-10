@@ -19,7 +19,8 @@ module I18nYamlEditor
 
     def nest_hash hash
       result = {}
-      hash.each {|key, value|
+      hash.keys.sort.each {|key|
+        value = hash[key]
         begin
           sub_result = result
           keys = key.split(".")

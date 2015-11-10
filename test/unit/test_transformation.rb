@@ -41,4 +41,23 @@ class TestTransformation < Minitest::Test
 
     assert_equal expected, Transformation.nest_hash(input)
   end
+
+  def test_nested_hash_to_yaml_sorts_keys
+    input = {
+        "en.b" => "banana",
+        "en.d" => "date",
+        "en.c" => "chili",
+        "en.a" => "avocado",
+    }
+    expected = <<-YAML
+---
+en:
+  a: avocado
+  b: banana
+  c: chili
+  d: date
+    YAML
+
+    assert_equal expected, Transformation.nest_hash(input).to_yaml
+  end
 end
