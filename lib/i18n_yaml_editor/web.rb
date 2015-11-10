@@ -34,7 +34,7 @@ module I18nYamlEditor
     end
 
     def default_layout
-      "#{views_path}/layout.#{template_engine}"
+      "#{views_path}/layout.html.#{template_engine}"
     end
 
     ##
