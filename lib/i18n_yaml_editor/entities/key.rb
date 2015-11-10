@@ -5,9 +5,7 @@ module I18nYamlEditor
 
     attributes :id, :path_template
 
-    def name
-      id
-    end
+    alias_method :name, :id
 
   end
 end

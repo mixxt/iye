@@ -9,27 +9,32 @@ module I18nYamlEditor
     attr_reader :base_path, :rel_path, :full_path
     attr_accessor :store
 
-    def initialize(path)
+    def initialize(path, options = {})
       @base_path = Dir.pwd
       @rel_path = path
       @full_path = File.expand_path(path, @base_path)
-      @store = Store.new
+      @store = options.fetch(:store){ Store.new }
 
-      load_translations
+      populate_store
     end
 
-    def load_translations
-      files = Dir[full_path + '/**/*.yml']
-      files.each do |file|
-        yaml = YAML.load_file(file)
-        store.from_yaml(yaml, file)
+    def populate_store
+      store.from_raw(load_files(Dir[full_path + '/**/*.yml']))
+    end
+
+    def persist_store
+      save_files(store.to_raw)
+    end
+
+    def load_files(files)
+      files.each_with_object({}) do |file, hash|
+        hash[file] = YAML.load_file(file)
       end
     end
 
-    def save_translations
-      files = store.to_yaml
-      files.each do |file, yaml|
-        File.open(file, 'w', encoding: 'utf-8') { |f| f << yaml.to_yaml }
+    def save_files(raw_data)
+      raw_data.map do |file, data|
+        File.open(file, 'w', encoding: 'utf-8') { |f| f << data.to_yaml }
       end
     end
   end

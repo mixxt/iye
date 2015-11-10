@@ -8,141 +8,140 @@ class TestStore < Minitest::Test
     @store = Store.new
   end
 
-  def test_add_translations
-    translation = Translation.new(:name => "da.session.login")
+  def test_add_raw_translations
+    translation = Translation.new(locale_id: 'da', key_id: 'session.login')
 
-    @store.add_translation(translation)
+    @store.add_raw_translation(translation.id, nil, nil)
 
-    assert_equal 1, @store.translations.size
-    assert_equal translation, @store.translations[translation.name]
+    assert_equal 1, @store.translation_repository.count
+    stored_translation = @store.translation_repository.find('da.session.login')
+    assert stored_translation
+    assert_equal translation.locale_id, stored_translation.locale_id
+    assert_equal translation.key_id, stored_translation.key_id
+    assert_equal translation.name, stored_translation.name
+    assert_equal translation.text, stored_translation.text
 
-    assert_equal 1, @store.keys.size
-    assert_equal Set.new([translation]), @store.keys["session.login"].translations
+    assert_equal 1, @store.key_repository.count
+    assert_equal 'session.login', @store.key_repository.first.name
 
-    assert_equal 1, @store.categories.size
-    assert_equal %w(session.login), @store.categories["session"].keys.map(&:name)
+    assert_equal 1, @store.category_repository.count
+    assert_equal 'session', @store.category_repository.first.name
 
-    assert_equal 1, @store.locales.size
-    assert_equal %w(da), @store.locales.to_a
+    assert_equal 1, @store.locale_repository.count
+    assert_equal 'da', @store.locale_repository.first.id
   end
 
-  def test_add_duplicate_translation
-    t1 = Translation.new(:name => "da.session.login")
-    t2 = Translation.new(:name => "da.session.login")
-    @store.add_translation(t1)
+  def test_complete_with_text_for_all_translations
+    key = Key.new(id: 'session.login')
+    @store.add_raw_translation "da.session.login", "Log ind"
+    @store.add_raw_translation "en.session.login", "Sign in"
 
-    assert_raises(DuplicateTranslationError) {
-      @store.add_translation(t2)
-    }
+    assert @store.key_complete?(key)
   end
+
+  def test_complete_with_no_texts
+    key = Key.new(id: 'session.login')
+    @store.add_raw_translation "da.session.login"
+    @store.add_raw_translation "en.session.login"
+
+    assert @store.key_complete?(key)
+  end
+
+  def test_not_complete_with_missing_texts
+    key = Key.new(id: 'session.login')
+    @store.add_raw_translation "da.session.login", "Log ind"
+    @store.add_raw_translation "en.session.login"
+
+    assert_equal false, @store.key_complete?(key)
+  end
+
+  def test_empty_with_no_texts
+    key = Key.new(id: 'session.login')
+    @store.add_raw_translation "da.session.login"
+    @store.add_raw_translation "en.session.login"
+
+    assert @store.key_empty?(key)
+  end
+
+  def test_empty_with_some_texts
+    key = Key.new(id: 'session.login')
+    @store.add_raw_translation "da.session.login", "Log ind"
+    @store.add_raw_translation "en.session.login"
+
+    assert_equal false, @store.key_empty?(key)
+  end
+
+  # def test_add_duplicate_translation
+  #   t1 = Translation.new(:name => "da.session.login")
+  #   t2 = Translation.new(:name => "da.session.login")
+  #   @store.add_raw_translation(t1)
+  #
+  #   assert_raises(DuplicateTranslationError) {
+  #     @store.add_raw_translation(t2)
+  #   }
+  # end
 
   def test_filter_keys_on_key
-    @store.add_key(Key.new(name: "session.login"))
-    @store.add_key(Key.new(name: "session.logout"))
+    @store.add_raw_translation("da.session.login")
+    @store.add_raw_translation("da.session.logout")
 
     result = @store.filter_keys(key: /login/)
 
     assert_equal 1, result.size
-    assert_equal %w(session.login), result.keys
+    assert_equal %w(session.login), result.map(&:name)
   end
 
   def test_filter_keys_on_complete
-    @store.add_translation Translation.new(name: "da.session.login", text: "Log ind")
-    @store.add_translation Translation.new(name: "en.session.login")
-    @store.add_translation Translation.new(name: "da.session.logout", text: "Log ud")
+    @store.add_raw_translation "da.session.login", "Log ind"
+    @store.add_raw_translation "en.session.login"
+    @store.add_raw_translation "da.session.logout", "Log ud"
+    @store.add_raw_translation "en.session.logout", "Logout"
 
     result = @store.filter_keys(complete: false)
 
-    assert_equal 1, result.size
-    assert_equal %w(session.login), result.keys
+    assert_equal %w(session.login), result.map(&:name)
   end
 
   def test_filter_keys_on_empty
-    @store.add_translation Translation.new(name: "da.session.login", text: "Log ind")
-    @store.add_translation Translation.new(name: "da.session.logout")
+    @store.add_raw_translation "da.session.login", "Log ind"
+    @store.add_raw_translation "da.session.logout"
 
     result = @store.filter_keys(empty: true)
 
-    assert_equal 1, result.size
-    assert_equal %w(session.logout), result.keys
+    assert_equal %w(session.logout), result.map(&:name)
   end
 
   def test_filter_keys_on_text
-    @store.add_translation Translation.new(name: "da.session.login", text: "Log ind")
-    @store.add_translation Translation.new(name: "da.session.logout", text: "Log ud")
-    @store.add_translation Translation.new(name: "da.app.name", text: "Translator")
+    @store.add_raw_translation "da.session.login", "Log ind"
+    @store.add_raw_translation "da.session.logout", "Log ud"
+    @store.add_raw_translation "da.app.name", "Translator"
 
     result = @store.filter_keys(text: /Log/)
 
     assert_equal 2, result.size
-    assert_equal %w(session.login session.logout).sort, result.keys.sort
+    assert_equal %w(session.login session.logout).sort, result.map(&:name)
   end
 
-  def test_create_missing_translations
-    @store.add_translation Translation.new(name: "da.session.login", text: "Log ind", file: "/tmp/session.da.yml")
-    @store.add_locale("en")
-
-    @store.create_missing_keys
-
-    assert(translation = @store.translations["en.session.login"])
-    assert_equal "en.session.login", translation.name
-    assert_equal "/tmp/session.en.yml", translation.file
-    assert_nil translation.text
-  end
-
-  def test_create_missing_translations_in_top_level_file
-    @store.add_translation Translation.new(name: "da.app_name", text: "Oversætter", file: "/tmp/da.yml")
-    @store.add_locale("en")
-
-    @store.create_missing_keys
-
-    assert(translation = @store.translations["en.app_name"])
-    assert_equal "en.app_name", translation.name
-    assert_equal "/tmp/en.yml", translation.file
-    assert_nil translation.text
-  end
-
-  def test_create_missing_translations_in_suffix_named_file
-    @store.add_translation Translation.new(name: "da.app_name", text: "Oversætter", file: "/tmp/something.foo.da.yml")
-    @store.add_locale("en")
-
-    @store.create_missing_keys
-
-    assert(translation = @store.translations["en.app_name"])
-    assert_equal "en.app_name", translation.name
-    assert_equal "/tmp/something.foo.en.yml", translation.file
-    assert_nil translation.text
-  end
-
-  def test_create_missing_translations_in_prefix_named_file
-    @store.add_translation Translation.new(name: "da.app_name", text: "Oversætter", file: "/tmp/da.something.foo.yml")
-    @store.add_locale("en")
-
-    @store.create_missing_keys
-
-    assert(translation = @store.translations["en.app_name"])
-    assert_equal "en.app_name", translation.name
-    assert_equal "/tmp/en.something.foo.yml", translation.file
-    assert_nil translation.text
-  end
-
-  def test_from_yaml
+  def test_from_raw
     input = {
-      da: {
-        session: {login: "Log ind"}
-      }
+        '/tmp/session.da.yml' => {
+            da: {
+                session: { login: "Log ind" }
+            }
+        }
     }
     store = Store.new
 
-    store.from_yaml(input)
+    store.from_raw(input)
 
     assert_equal 1, store.translations.size
-    translation = store.translations["da.session.login"]
-    assert_equal "da.session.login", translation.name
+    translation = store.translations.first
+    assert_equal "da", translation.locale_id
+    assert_equal "session.login", translation.key_id
     assert_equal "Log ind", translation.text
   end
 
-  def test_to_yaml
+  def test_to_raw
     expected = {
       "/tmp/session.da.yml" => {
         "da" => {
@@ -162,18 +161,22 @@ class TestStore < Minitest::Test
       "/tmp/da.yml" => {
         "da" => {
           "app_name" => "Oversætter",
-          "empty_string" => nil
+          "empty_string" => "",
+          "nil_string" => nil,
+          "day_names" => [ 'søndag', 'mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag' ]
         }
       }
     }
 
     store = Store.new
-    store.add_translation Translation.new(name: "da.session.login", text: "Log ind", file: "/tmp/session.da.yml")
-    store.add_translation Translation.new(name: "en.session.login", text: "Sign in", file: "/tmp/session.en.yml")
-    store.add_translation Translation.new(name: "da.session.logout", text: "Log ud", file: "/tmp/session.da.yml")
-    store.add_translation Translation.new(name: "da.app_name", text: "Oversætter", file: "/tmp/da.yml")
-    store.add_translation Translation.new(name: "da.empty_string", text: "", file: "/tmp/da.yml")
+    store.add_raw_translation "da.session.login", "Log ind", "/tmp/session.da.yml"
+    store.add_raw_translation "en.session.login", "Sign in", "/tmp/session.en.yml"
+    store.add_raw_translation "da.session.logout", "Log ud", "/tmp/session.da.yml"
+    store.add_raw_translation "da.app_name", "Oversætter", "/tmp/da.yml"
+    store.add_raw_translation "da.empty_string", "", "/tmp/da.yml"
+    store.add_raw_translation "da.nil_string", nil, "/tmp/da.yml"
+    store.add_raw_translation "da.day_names", [ 'søndag', 'mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag' ], "/tmp/da.yml"
 
-    assert_equal expected, store.to_yaml
+    assert_equal expected, store.to_raw
   end
 end

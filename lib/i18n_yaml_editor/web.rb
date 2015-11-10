@@ -113,7 +113,7 @@ module I18nYamlEditor
         # options[:complete] = false if filters['incomplete'] == 'on'
         # options[:empty] = true if filters['empty'] == 'on'
 
-        keys = store.key_repository.filter(options)
+        keys = store.filtered_keys(options)
 
         render('translations.html', keys: keys)
       else

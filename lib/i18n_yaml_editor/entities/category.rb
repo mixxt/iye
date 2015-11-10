@@ -5,9 +5,7 @@ module I18nYamlEditor
 
     attributes :id, :complete
 
-    def name
-      id
-    end
+    alias_method :name, :id
 
     def complete?
       complete

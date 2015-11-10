@@ -11,6 +11,14 @@ module I18nYamlEditor
       table.map { |k, v| to_entity(v) }
     end
 
+    def count
+      table.length
+    end
+
+    def first
+      to_entity(table.first[1])
+    end
+
     def exists?(entity)
       ensure_id!(entity)
 

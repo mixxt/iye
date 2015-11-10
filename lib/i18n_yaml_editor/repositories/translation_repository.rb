@@ -12,5 +12,15 @@ module I18nYamlEditor
       all.select{ |translation| translation.key_id == key.id }
     end
 
+    def find_by(attributes)
+      if attributes.key?(:locale_id) && attributes.key?(:key_id)
+        id = attributes.values_at(:locale_id, :key_id).join('.')
+        data = table[id]
+        to_entity(data) if data
+      else
+        super
+      end
+    end
+
   end
 end
