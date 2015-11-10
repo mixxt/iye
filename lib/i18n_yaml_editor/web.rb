@@ -28,8 +28,10 @@ module I18nYamlEditor
     # can be different if it is mounted inside another rack app
     #
     # @return [String]
-    def root_path
-      "#{request.script_name}/"
+    def root_path(params = {})
+      path = "#{request.script_name}/"
+      path = "#{path}?#{Rack::Utils.build_nested_query(params)}" unless params.empty?
+      path
     end
 
     def show_key_path(key)
@@ -130,7 +132,7 @@ module I18nYamlEditor
         app.persist_store
       end
 
-      response.redirect "#{root_path}?#{Rack::Utils.build_nested_query(filter_params: filter_params)}"
+      response.redirect root_path(filter: filter_params)
     end
 
     # confirm key deletion

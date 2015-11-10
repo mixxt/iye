@@ -19,6 +19,10 @@ module I18nYamlEditor
       to_entity(table.first[1])
     end
 
+    def where(condition)
+      all.select{ |translation| condition.all?{ |k, v| translation[k] == v } }
+    end
+
     def exists?(entity)
       ensure_id!(entity)
 

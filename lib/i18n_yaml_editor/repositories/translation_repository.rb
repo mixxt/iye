@@ -8,8 +8,8 @@ module I18nYamlEditor
     end
 
     def all_for_key(key)
-      # TODO add index for performance
-      all.select{ |translation| translation.key_id == key.id }
+      translation_ids = store.locales.flat_map{ |l| [ l.name, key.id ].join('.') }
+      table.values_at(*translation_ids).compact.map(&method(:to_entity))
     end
 
     def find_by(attributes)

@@ -9,7 +9,7 @@ module I18nYamlEditor
 
     def _changing(entity)
       store.category_repository.clear_cache
-      yield
+      super(entity)
     end
 
     def filter_keys(filter)
