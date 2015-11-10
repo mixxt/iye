@@ -3,26 +3,24 @@ module I18nYamlEditor
 
   class Store
     include Transformation
+    extend Forwardable
 
     attr_accessor :key_repository, :translation_repository, :locale_repository, :category_repository
+
+    def_delegator :category_repository, :all, :categories
+    def_delegator :key_repository, :all, :keys
+    def_delegator :locale_repository, :all, :locales
+    def_delegator :translation_repository, :all, :translations
+
+    def_delegator :key_repository, :filter_keys
+    def_delegator :key_repository, :unique_path_templates, :path_templates
+    def_delegator :translation_repository, :all_for_key, :translations_for_key
 
     def initialize
       @category_repository = CategoryRepository.new(self)
       @key_repository = KeyRepository.new(self)
       @locale_repository = LocaleRepository.new(self)
       @translation_repository = TranslationRepository.new(self)
-    end
-
-    def locales
-      locale_repository.all
-    end
-
-    def categories
-      category_repository.all
-    end
-
-    def translations
-      translation_repository.all
     end
 
     def key_complete?(key)
@@ -33,18 +31,6 @@ module I18nYamlEditor
 
     def key_empty?(key)
       translation_repository.all_for_key(key).all?(&:text_blank?)
-    end
-
-    def filter_keys(filter)
-      key_repository.filter_keys(filter)
-    end
-
-    def translations_for_key(key)
-      translation_repository.all_for_key(key)
-    end
-
-    def path_templates
-      key_repository.unique_path_templates
     end
 
     def from_raw(raw)

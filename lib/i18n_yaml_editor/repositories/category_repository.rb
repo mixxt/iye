@@ -8,7 +8,7 @@ module I18nYamlEditor
     end
 
     def table
-      @table ||= store.key_repository.all.each_with_object({}) do |key, hash|
+      @table ||= store.keys.each_with_object({}) do |key, hash|
         category_id = key.id.split('.').first
         hash[category_id] ||= begin
           category = Category.new(id: category_id)

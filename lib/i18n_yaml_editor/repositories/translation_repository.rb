@@ -8,8 +8,9 @@ module I18nYamlEditor
     end
 
     def all_for_key(key)
-      translation_ids = store.locales.flat_map{ |l| [ l.name, key.id ].join('.') }
-      table.values_at(*translation_ids).compact.map(&method(:to_entity))
+      store.locales.map do |locale|
+        find_or_initialize_by(locale_id: locale.id, key_id: key.id)
+      end
     end
 
     def find_by(attributes)

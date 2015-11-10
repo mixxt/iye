@@ -14,7 +14,7 @@
         </td>
         <td class="translations">
           <table class="locales">
-            <% store.translation_repository.all_for_key(key).sort_by(&:locale_id).each do |translation| %>
+            <% translation_repository.all_for_key(key).each do |translation| %>
               <tr>
                 <td class="locale"><%= translation.locale_id %>:</td>
                 <td class="value">

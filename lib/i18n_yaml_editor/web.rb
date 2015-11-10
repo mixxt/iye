@@ -15,6 +15,20 @@ module I18nYamlEditor
     use Rack::Static, urls: ['/stylesheets'], root: I18nYamlEditor.root.join('public')
     use Rack::MethodOverride
 
+    extend Forwardable
+
+    ##
+    # Rack app stack with endpoints for given iye_app
+    #
+    # @param iye_app [I18nYamlEditor::App]
+    # @return [Rack::Builder] rack app to be run
+    def self.app_stack(iye_app)
+      Rack::Builder.new do
+        use AppEnv, iye_app
+        run Web
+      end
+    end
+
     def views_path
       @views_path ||= I18nYamlEditor.root.join('views')
     end
@@ -47,9 +61,8 @@ module I18nYamlEditor
       env['iye.app'] || raise('Request outside of iye app context; please use I18nYamlEditor#app_stack(iye_app)')
     end
 
-    def store
-      app.store
-    end
+    def_delegator :app, :store
+    def_delegators :store, :category_repository, :key_repository, :locale_repository, :translation_repository
 
     ##
     # Helper method to access filters param
@@ -59,27 +72,15 @@ module I18nYamlEditor
       request.params['filters'] || {}
     end
 
-    ##
-    # Rack app stack with endpoints for given iye_app
-    #
-    # @param iye_app [I18nYamlEditor::App]
-    # @return [Rack::Builder] rack app to be run
-    def self.app_stack(iye_app)
-      Rack::Builder.new do
-        use AppEnv, iye_app
-        run Web
-      end
-    end
-
     get '/debug' do
       require 'json'
 
       response.headers['Content-Type'] = 'application/json; charset=utf-8'
       {
-          locales: store.locale_repository.all.map(&:inspect),
-          categories: store.category_repository.all.map(&:inspect),
-          keys: store.key_repository.all.map(&:inspect),
-          translations: store.translation_repository.all.map(&:inspect)
+          locales: store.locales.map(&:inspect),
+          categories: store.categories.map(&:inspect),
+          keys: store.keys.map(&:inspect),
+          translations: store.translations.map(&:inspect)
       }.to_json
     end
 
@@ -91,15 +92,15 @@ module I18nYamlEditor
     # create single key
     post '/create' do
       key_params = request.params['key']
-      translations = key_params.delete('translations')
+      translation_params = key_params.delete('translations')
 
       key = Key.new(id: key_params.fetch('id'), path_template: key_params.fetch('path_template'))
-      store.key_repository.create(key)
+      key_repository.create(key)
 
-      translations.each do |locale_id, text|
+      translation_params.each do |locale_id, text|
         text = nil if text.empty?
-        locale = store.locale_repository.find(locale_id)
-        store.translation_repository.persist Translation.new(locale_id: locale.id, key_id: key.id, value: text)
+        locale = locale_repository.find(locale_id)
+        translation_repository.persist Translation.new(locale_id: locale.id, key_id: key.id, value: text)
       end
 
       app.persist_store
@@ -139,19 +140,19 @@ module I18nYamlEditor
 
     # confirm key deletion
     get '/keys/:id/destroy' do
-      key = store.key_repository.find(request.params[:id])
+      key = key_repository.find(request.params[:id])
 
       render('destroy.html', key: key, translations: store.translations_for_key(key))
     end
 
     # delete key
     delete '/keys/:id' do
-      key = store.key_repository.find(request.params[:id])
+      key = key_repository.find(request.params[:id])
 
       store.translations_for_key(key).each do |translation|
-        store.translation_repository.delete(translation)
+        translation_repository.delete(translation)
       end
-      store.key_repository.delete(key)
+      key_repository.delete(key)
 
       response.redirect(root_path)
     end

@@ -33,6 +33,10 @@ module I18nYamlEditor
       to_entity(table.fetch(id))
     end
 
+    def find_or_initialize_by(attributes)
+      find_by(attributes) || to_entity(attributes)
+    end
+
     def create(entity)
       ensure_id!(entity)
       raise "Duplicate key error: #{entity.inspect}" if table.key?(entity[:id])
