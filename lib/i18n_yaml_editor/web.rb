@@ -99,6 +99,8 @@ module I18nYamlEditor
         store.translation_repository.persist Translation.new(locale_id: locale.id, key_id: key.id, value: text)
       end
 
+      app.persist_store
+
       response.redirect show_key_path(key)
     end
 
