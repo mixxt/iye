@@ -27,7 +27,7 @@ class CapybaraTest < Minitest::Test
   def setup
     @fixture_path = setup_fixture_dir('simple')
     @app = I18nYamlEditor::App.new(@fixture_path)
-    Capybara.app = I18nYamlEditor::Web.app_stack(@app)
+    Capybara.app = I18nYamlEditor.endpoint_for_app(@app)
     Capybara.raise_server_errors = true
     Capybara.default_host = 'http://iye.test'
   end

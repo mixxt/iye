@@ -10,6 +10,27 @@ module I18nYamlEditor
     @root ||= Pathname.new(File.expand_path('../..', __FILE__))
   end
 
+  ##
+  # Rack endpoint for given locale folder
+  #
+  # @param folder [String]
+  # @return [Rack::Builder] rack app to be run
+  def self.endpoint_for_folder(folder)
+    I18nYamlEditor.endpoint_for_app(I18nYamlEditor::App.new(folder))
+  end
+
+  ##
+  # Rack endpoint for given iye_app
+  #
+  # @param iye_app [I18nYamlEditor::App]
+  # @return [Rack::Builder] rack app to be run
+  def self.endpoint_for_app(app)
+    Rack::Builder.new do
+      use Web::AppEnv, app
+      run Web
+    end
+  end
+
 end
 
 require 'i18n_yaml_editor/entities/category'

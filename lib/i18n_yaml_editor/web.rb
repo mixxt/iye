@@ -17,18 +17,6 @@ module I18nYamlEditor
 
     extend Forwardable
 
-    ##
-    # Rack app stack with endpoints for given iye_app
-    #
-    # @param iye_app [I18nYamlEditor::App]
-    # @return [Rack::Builder] rack app to be run
-    def self.app_stack(iye_app)
-      Rack::Builder.new do
-        use AppEnv, iye_app
-        run Web
-      end
-    end
-
     def views_path
       @views_path ||= I18nYamlEditor.root.join('views')
     end
