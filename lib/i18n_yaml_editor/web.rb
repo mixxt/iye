@@ -142,6 +142,8 @@ module I18nYamlEditor
       end
       key_repository.delete(key)
 
+      app.persist_store
+
       response.redirect(root_path)
     end
 
