@@ -10,22 +10,22 @@ class TestTranslation < Minitest::Test
   end
 
   def test_nil_value_is_blank_text
-    translation = Translation.new(value: nil)
+    translation = Translation.new(text: nil)
     assert translation.text_blank?
   end
 
   def test_empty_value_is_blank_text
-    translation = Translation.new(value: "")
+    translation = Translation.new(text: "")
     assert translation.text_blank?
   end
 
   def test_space_value_is_blank_text
-    translation = Translation.new(value: " ")
+    translation = Translation.new(text: " ")
     assert translation.text_blank?
   end
 
   def test_tab_value_is_blank_text
-    translation = Translation.new(value: "\t")
+    translation = Translation.new(text: "\t")
     assert translation.text_blank?
   end
 
@@ -35,7 +35,7 @@ class TestTranslation < Minitest::Test
   end
 
   def test_text_normalize_newlines
-    translation = Translation.new(value: "foo\r\nbar")
+    translation = Translation.new(text: "foo\r\nbar")
     assert_equal "foo\nbar", translation.text
   end
 
@@ -45,12 +45,12 @@ class TestTranslation < Minitest::Test
   end
 
   def test_number_of_lines_single_line
-    translation = Translation.new(value: "foo")
+    translation = Translation.new(text: "foo")
     assert_equal 1, translation.number_of_lines
   end
 
   def test_number_of_lines_multiple_lines
-    translation = Translation.new(value: "foo\nbar\nbaz")
+    translation = Translation.new(text: "foo\nbar\nbaz")
     assert_equal 3, translation.number_of_lines
   end
 

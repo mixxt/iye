@@ -17,7 +17,14 @@ module I18nYamlEditor
 
     def initialize(attributes = {})
       raise "Attributes is not a Hash: #{attributes.inspect}" unless attributes.is_a?(Hash)
-      @attributes = attributes.clone
+      @attributes = {}
+      self.write_attributes(attributes)
+    end
+
+    def write_attributes(attributes)
+      attributes.each do |key, value|
+        self.send("#{key}=", value)
+      end
     end
 
     def [](key)

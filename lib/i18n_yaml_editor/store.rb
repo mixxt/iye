@@ -33,6 +33,13 @@ module I18nYamlEditor
       translation_repository.all_for_key(key).all?(&:text_blank?)
     end
 
+    def delete_key(key)
+      translations_for_key(key).each do |translation|
+        translation_repository.delete(translation)
+      end
+      key_repository.delete(key)
+    end
+
     def from_raw(raw)
       raw.each do |path, data|
         flatten_hash(data).each do |full_key, text|
@@ -42,15 +49,8 @@ module I18nYamlEditor
     end
 
     def add_raw_translation(full_key, value = nil, path = nil)
-      _convert_raw_translation(full_key, value, path) do |translation|
-        translation_repository.create(translation)
-      end
-    end
-
-    def upsert_raw_translation(full_key, value = nil)
-      _convert_raw_translation(full_key, value) do |translation|
-        translation_repository.persist(translation)
-      end
+      translation = _convert_raw_translation(full_key, value, path)
+      translation_repository.create(translation)
     end
 
     def to_raw
@@ -79,7 +79,7 @@ module I18nYamlEditor
       locale_repository.persist(locale) unless locale_repository.exists?(locale)
       key_repository.persist(key) unless key_repository.exists?(key)
 
-      yield(translation)
+      translation
     end
 
   end

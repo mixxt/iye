@@ -86,9 +86,8 @@ module I18nYamlEditor
       key_repository.create(key)
 
       translation_params.each do |locale_id, text|
-        text = nil if text.empty?
         locale = locale_repository.find(locale_id)
-        translation_repository.persist Translation.new(locale_id: locale.id, key_id: key.id, value: text)
+        translation_repository.create Translation.new(locale_id: locale.id, key_id: key.id, text: text)
       end
 
       app.persist_store
@@ -98,12 +97,12 @@ module I18nYamlEditor
 
     # index
     get '/' do
-      if (filters = request.params['filters'])
+      if filter_params.size > 0
         options = {}
-        options[:key] = /#{filters['key']}/ if String(filters['key']).length > 0
-        options[:text] = /#{filters['text']}/i if String(filters['text']).length > 0
-        options[:complete] = false if filters['incomplete'] == 'on'
-        options[:empty] = true if filters['empty'] == 'on'
+        options[:key] = /#{filter_params['key']}/ if String(filter_params['key']).length > 0
+        options[:text] = /#{filter_params['text']}/i if String(filter_params['text']).length > 0
+        options[:complete] = false if filter_params['incomplete'] == 'on'
+        options[:empty] = true if filter_params['empty'] == 'on'
 
         keys = store.filter_keys(options)
 
@@ -115,13 +114,12 @@ module I18nYamlEditor
 
     # mass update
     post '/update' do
-      if (translations = request.params['translations'])
-        translations.each do |name, text|
-          text = nil if text.empty?
-          store.upsert_raw_translation name, text
-        end
-        app.persist_store
+      Array(request.params['translations']).each do |name, text|
+        locale_id, key_id = name.split('.', 2)
+        translation_repository.persist Translation.new(locale_id: locale_id, key_id: key_id, text: text)
       end
+
+      app.persist_store
 
       response.redirect root_path(filters: filter_params)
     end
@@ -137,11 +135,7 @@ module I18nYamlEditor
     delete '/keys/:id' do
       key = key_repository.find(request.params[:id])
 
-      store.translations_for_key(key).each do |translation|
-        translation_repository.delete(translation)
-      end
-      key_repository.delete(key)
-
+      store.delete_key(key)
       app.persist_store
 
       response.redirect(root_path)

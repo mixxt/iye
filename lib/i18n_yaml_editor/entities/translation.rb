@@ -12,9 +12,11 @@ module I18nYamlEditor
     end
 
     def text
-      return nil unless stringish?
+      String(self[:value])
+    end
 
-      String(self[:value]).strip.gsub(/\r\n/, "\n")
+    def text=(text)
+      self.value = text_to_value(text)
     end
 
     def stringish?
@@ -39,5 +41,16 @@ module I18nYamlEditor
     def full_key
       [locale_id, key_id].join('.')
     end
+
+    private
+
+    def text_to_value(text)
+      if String(text).empty?
+        nil
+      else
+        text.strip.gsub(/\r\n/, "\n")
+      end
+    end
+
   end
 end
