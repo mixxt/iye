@@ -41,6 +41,18 @@ module I18nYamlEditor
     end
     alias_method :show_category_path, :show_key_path
 
+    def key_path(key)
+      "#{root_path}keys?#{Rack::Utils.build_nested_query(key_id: key.id)}"
+    end
+
+    def edit_key_path(key)
+      "#{root_path}keys/edit?#{Rack::Utils.build_nested_query(key_id: key.id)}"
+    end
+
+    def destroy_key_path(key)
+      "#{root_path}keys/destroy?#{Rack::Utils.build_nested_query(key_id: key.id)}"
+    end
+
     ##
     # IYE app context
     #
@@ -124,16 +136,35 @@ module I18nYamlEditor
       response.redirect root_path(filters: filter_params)
     end
 
+    # edit/rename key
+    get '/keys/edit' do
+      key = key_repository.find(request.params['key_id'])
+
+      render('edit.html', key: key, translations: store.translations_for_key(key))
+    end
+
     # confirm key deletion
-    get '/keys/:id/destroy' do
-      key = key_repository.find(request.params[:id])
+    get '/keys/destroy' do
+      key = key_repository.find(request.params['key_id'])
 
       render('destroy.html', key: key, translations: store.translations_for_key(key))
     end
 
+    # update key
+    put '/keys' do
+      key = key_repository.find(request.params['key_id'])
+      key_params = request.params.fetch('key')
+
+
+      store.rename_key(key, key_params['new_id']) if key_params['new_id']
+      app.persist_store
+
+      response.redirect(show_key_path(key))
+    end
+
     # delete key
-    delete '/keys/:id' do
-      key = key_repository.find(request.params[:id])
+    delete '/keys' do
+      key = key_repository.find(request.params['key_id'])
 
       store.delete_key(key)
       app.persist_store

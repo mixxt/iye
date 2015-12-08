@@ -94,12 +94,35 @@ class TestWeb < CapybaraTest
     within 'tr.translation' do
       click_link 'Delete'
     end
+    assert_equal 'http://iye.test/keys/destroy?key_id=key', current_url
+
     click_button 'Yes, really delete'
 
     assert_equal 0, store.key_repository.count
     assert_equal 0, store.translation_repository.count
 
     assert_equal '/', current_path
+  end
+
+  def test_key_renaming
+    rename_calls = []
+    store.define_singleton_method(:rename_key) { |key, name| rename_calls << [ key, name ]; key.id = name; key }
+
+    visit '/'
+    click_link 'key'
+    within 'tr.translation' do
+      click_link 'Rename'
+    end
+    assert_equal 'http://iye.test/keys/edit?key_id=key', current_url
+
+    page.fill_in 'key[new_id]', with: 'renamed_key'
+    page.click_button 'Update key'
+
+    assert_equal rename_calls.count, 1
+    assert_equal rename_calls.first[0].class, Key
+    assert_equal rename_calls.first[1], 'renamed_key'
+
+    assert_equal 'http://iye.test/?filters[key]=%5Erenamed_key', current_url
   end
 
 end

@@ -30,6 +30,7 @@ module I18nYamlEditor
     end
 
     def find(id)
+      raise "Can't find with nil id" if id.nil?
       to_entity(table.fetch(id))
     end
 

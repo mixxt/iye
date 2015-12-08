@@ -179,4 +179,24 @@ class TestStore < Minitest::Test
 
     assert_equal expected, store.to_raw
   end
+
+  def test_rename_key
+    store = Store.new
+    store.add_raw_translation "da.session.login", "Log ind", "/tmp/session.da.yml"
+    store.add_raw_translation "en.session.login", "Sign in", "/tmp/session.en.yml"
+
+    key = store.key_repository.find 'session.login'
+    assert key
+
+    key = store.rename_key key, 'session.sign_in'
+    assert_equal(1, store.key_repository.count)
+    assert_equal(2, store.translation_repository.count)
+    assert_equal('session.sign_in', key.name)
+
+    new_key = store.key_repository.find 'session.sign_in'
+    assert(new_key)
+
+    assert(store.translation_repository.find('da.session.sign_in'))
+    assert(store.translation_repository.find('en.session.sign_in'))
+  end
 end

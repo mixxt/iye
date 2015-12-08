@@ -7,8 +7,11 @@ module I18nYamlEditor
 
     alias_method :name, :id
 
-    def initialize(args)
-      super({ id: args.values_at(:locale_id, :key_id).join('.') }.merge(args))
+    def locale_id=(locale_id)
+      super.tap{ update_id }
+    end
+    def key_id=(key_id)
+      super.tap{ update_id }
     end
 
     def text
@@ -50,6 +53,10 @@ module I18nYamlEditor
       else
         text.strip.gsub(/\r\n/, "\n")
       end
+    end
+
+    def update_id
+      self.id = attributes.values_at(:locale_id, :key_id).join('.')
     end
 
   end

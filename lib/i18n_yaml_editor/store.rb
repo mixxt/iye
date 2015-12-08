@@ -24,13 +24,28 @@ module I18nYamlEditor
     end
 
     def key_complete?(key)
-      keys = translation_repository.all_for_key(key)
-      first_text_present = keys.first.text_present?
-      keys.all?{ |k| k.text_present? == first_text_present }
+      translations = translation_repository.all_for_key(key)
+      first_text_present = translations.first.text_present?
+      translations.all?{ |k| k.text_present? == first_text_present }
     end
 
     def key_empty?(key)
       translation_repository.all_for_key(key).all?(&:text_blank?)
+    end
+
+    ##
+    # Renames given key to new_id, migrates translations and persists it
+    def rename_key(key, new_id)
+      translations = translation_repository.all_for_key(key)
+      delete_key(key)
+
+      key.id = new_id
+      translations.each{ |t| t.key_id = new_id }
+
+      key_repository.create key
+      translations.each{ |t| translation_repository.create t }
+
+      key
     end
 
     def delete_key(key)

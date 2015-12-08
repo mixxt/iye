@@ -1,0 +1,13 @@
+<form action="<%= key_path(key) %>" method="post">
+  <input type="hidden" name="_method" value="put" />
+
+  <h2>Edit key:</h2>
+  <table>
+    <tr>
+      <td>Key</td>
+      <td><input name='key[new_id]' type="text" size="60" autofocus onfocus="this.value = this.value" value="<%= ERB::Util.html_escape(key.id) %>"/></td>
+    </tr>
+  </table>
+  <input class="btn btn-primary" type="submit" value="Update key" />
+  <a href="#" onclick="history.back(); return false;">Cancel</a>
+</form>

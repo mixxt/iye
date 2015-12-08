@@ -2,15 +2,18 @@ module I18nYamlEditor
   class Entity
 
     def self.attributes(*args)
-      args.each do |attr|
-        define_method attr do
-          attributes[attr]
-        end
+      mod = Module.new do
+        args.each do |attr|
+          define_method attr do
+            attributes[attr]
+          end
 
-        define_method "#{attr}=" do |val|
-          attributes[attr] = val
+          define_method "#{attr}=" do |val|
+            attributes[attr] = val
+          end
         end
       end
+      include mod
     end
 
     attr_reader :attributes
