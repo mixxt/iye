@@ -57,8 +57,8 @@ class TestWeb < CapybaraTest
     visit '/'
     click_link 'key'
 
-    page.fill_in 'translations[de.key]', with: 'geänderter Wert'
-    page.fill_in 'translations[en.key]', with: 'changed value'
+    page.fill_in 'translations[de.key][text]', with: 'geänderter Wert'
+    page.fill_in 'translations[en.key][text]', with: 'changed value'
     page.click_button 'Save Translations'
 
     assert_equal 1, store.key_repository.count
@@ -67,6 +67,22 @@ class TestWeb < CapybaraTest
     assert_equal 'changed value', store.translation_repository.find('en.key').value
 
     assert_equal 'http://iye.test/?filters[key]=%5Ekey', current_url
+  end
+
+  def test_translation_json_update
+    da_week = %w{ søndag mandag tirsdag onsdag torsdag fredag lørdag }
+    en_week = %w{ sunday monday tuesday wednesday thursday friday saturday }
+
+    store.add_raw_translation "da.day_names", da_week, "/tmp/da.yml"
+
+    visit '/'
+    click_link 'day_names'
+
+    page.fill_in 'translations[en.day_names][value]', with: en_week.to_json
+    page.click_button 'Save Translations'
+
+    assert_equal da_week, store.translation_repository.find('da.day_names').value
+    assert_equal en_week, store.translation_repository.find('en.day_names').value
   end
 
   def test_key_and_translation_creation

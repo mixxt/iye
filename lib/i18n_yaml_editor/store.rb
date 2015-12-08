@@ -33,6 +33,10 @@ module I18nYamlEditor
       translation_repository.all_for_key(key).all?(&:text_blank?)
     end
 
+    def json_key?(key)
+      translation_repository.all_for_key(key).any?(&:not_stringish?)
+    end
+
     ##
     # Renames given key to new_id, migrates translations and persists it
     def rename_key(key, new_id)

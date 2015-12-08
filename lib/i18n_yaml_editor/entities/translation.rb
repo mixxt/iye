@@ -15,7 +15,7 @@ module I18nYamlEditor
     end
 
     def text
-      String(self[:value])
+      String(value)
     end
 
     def text=(text)
@@ -23,7 +23,10 @@ module I18nYamlEditor
     end
 
     def stringish?
-      self[:value].nil? || self[:value].is_a?(String)
+      value.nil? || value.is_a?(String)
+    end
+    def not_stringish?
+      !stringish?
     end
 
     def number_of_lines

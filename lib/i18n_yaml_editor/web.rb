@@ -130,9 +130,16 @@ module I18nYamlEditor
 
     # mass update
     post '/update' do
-      Array(request.params['translations']).each do |name, text|
+      Array(request.params['translations']).each do |name, text_or_value|
         locale_id, key_id = name.split('.', 2)
-        translation_repository.persist Translation.new(locale_id: locale_id, key_id: key_id, text: text)
+        translation = Translation.new(locale_id: locale_id, key_id: key_id)
+        if text_or_value['value']
+          val = text_or_value['value']
+          translation.value = val == 'null' ? nil : JSON.parse(val)
+        else
+          translation.text = text_or_value['text']
+        end
+        translation_repository.persist translation
       end
 
       app.persist_store

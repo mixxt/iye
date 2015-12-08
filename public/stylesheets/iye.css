@@ -125,6 +125,10 @@ table.locales td.value textarea {
     width: 600px;
 }
 
+table.locales td.value span {
+    vertical-align: top;
+}
+
 /* CATEGORIES */
 
 table.categories tr.category a {
