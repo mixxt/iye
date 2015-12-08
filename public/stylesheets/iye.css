@@ -97,10 +97,10 @@ table td {
     padding: 0 1em;
 }
 
-table.keys .delete-button {
+table.keys .hover-button {
     visibility: hidden;
 }
-table.keys tr:hover .delete-button {
+table.keys tr:hover .hover-button {
     visibility: visible;
 }
 
@@ -146,14 +146,14 @@ table.categories tr.category.incomplete .key .text {
 
 /* NEW TRANSLATION FORM */
 
-.new {
+.standalone-form {
     padding: 20px;
     border-bottom: 1px solid #bbb;
 }
-.new table input, .new table select {
+.standalone-form table input, .new table select {
     width: 100%;
 }
-.new table, .new table td {
+.standalone-form table, .new table td {
     border: none;
     vertical-align: top;
 }

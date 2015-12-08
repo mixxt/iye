@@ -1,28 +1,26 @@
-<div class="new">
-  <form id="newform" action="<%= root_path %>create" method="post">
-    <h2>Add new translation:</h2>
-    <table>
-      <tr>
-        <td>File</td>
-        <td>
-          <select name='key[path_template]'>
-            <% app.store.path_templates.each do |path_template| %>
-              <option value="<%=path_template%>"><%= path_template.gsub(app.base_path + '/', '') %></option>
-            <% end %>
-          </select>
-        </td>
-      </tr>
-      <tr>
-        <td>Key</td>
-        <td><input name='key[id]' type="text" size="60" autofocus onfocus="this.value = this.value" value="<%= ERB::Util.html_escape(String(request.params['key']).gsub(/^\^/, '')) %>"/></td>
-      </tr>
-    <% app.store.locales.each do |locale| %>
-      <tr>
-        <td><%= locale.name %></td>
-        <td><textarea name='key[translations][<%= locale.id %>]' type="text" cols="60" rows="3"></textarea></td>
-      </tr>
-    <% end %>
-    </table>
-    <p><input class="btn btn-primary" type="submit" value="Create key"></p>
-  </form>
-</div>
+<form id="new-key-form" class="standalone-form" action="<%= root_path %>create" method="post">
+  <h2>Add new translation:</h2>
+  <table>
+    <tr>
+      <td>File</td>
+      <td>
+        <select name='key[path_template]'>
+          <% app.store.path_templates.each do |path_template| %>
+            <option value="<%=path_template%>"><%= path_template.gsub(app.base_path + '/', '') %></option>
+          <% end %>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td>Key</td>
+      <td><input name='key[id]' type="text" size="60" autofocus onfocus="this.value = this.value" value="<%= ERB::Util.html_escape(String(request.params['key']).gsub(/^\^/, '')) %>"/></td>
+    </tr>
+  <% app.store.locales.each do |locale| %>
+    <tr>
+      <td><%= locale.name %></td>
+      <td><textarea name='key[translations][<%= locale.id %>]' type="text" cols="60" rows="3"></textarea></td>
+    </tr>
+  <% end %>
+  </table>
+  <p><input class="btn btn-primary" type="submit" value="Create key"></p>
+</form>
