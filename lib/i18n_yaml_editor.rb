@@ -26,8 +26,7 @@ module I18nYamlEditor
   # @return [Rack::Builder] rack app to be run
   def self.endpoint_for_app(app)
     Rack::Builder.new do
-      use Web::AppEnv, app
-      run Web
+      run Web.new(app)
     end
   end
 

@@ -17,6 +17,18 @@ module I18nYamlEditor
 
     extend Forwardable
 
+    def initialize(iye_app)
+      @iye_app = iye_app
+    end
+
+    ##
+    # IYE app context
+    #
+    # @return [I18nYamlEditor::App]
+    def app
+      @iye_app
+    end
+
     def views_path
       @views_path ||= I18nYamlEditor.root.join('views')
     end
@@ -51,14 +63,6 @@ module I18nYamlEditor
 
     def destroy_key_path(key)
       "#{root_path}keys/destroy?#{Rack::Utils.build_nested_query(key_id: key.id)}"
-    end
-
-    ##
-    # IYE app context
-    #
-    # @return [I18nYamlEditor::App]
-    def app
-      env['iye.app'] || raise('Request outside of iye app context; please use I18nYamlEditor#app_stack(iye_app)')
     end
 
     def_delegator :app, :store
@@ -170,22 +174,6 @@ module I18nYamlEditor
       app.persist_store
 
       response.redirect(root_path)
-    end
-
-    ##
-    # Middleware that sets iye_app in request environment
-    # Used by I18nYamlEditor::Web#app_stack
-    class AppEnv
-      def initialize(app, iye_app)
-        @app = app
-        @iye_app = iye_app
-      end
-
-      def call(env)
-        env['iye.app'] = @iye_app
-
-        @app.call(env)
-      end
     end
   end
 end
