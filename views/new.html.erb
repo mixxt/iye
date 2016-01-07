@@ -1,4 +1,4 @@
-<form id="new-key-form" class="standalone-form" action="<%= root_path %>create" method="post">
+<form id="new-key-form" class="standalone-form" action="<%= root_path %>create" method="post" onsubmit="disableSubmit(event.target);">
   <h2>Add new translation:</h2>
   <table>
     <tr>
