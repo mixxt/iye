@@ -12,7 +12,7 @@ module I18nYamlEditor
   class Web < Hobbit::Base
     include Hobbit::Render
 
-    use Rack::Static, urls: ['/stylesheets'], root: I18nYamlEditor.root.join('public')
+    use Rack::Static, urls: ['/stylesheets', '/javascripts'], root: I18nYamlEditor.root.join('public')
     use Rack::MethodOverride
 
     extend Forwardable

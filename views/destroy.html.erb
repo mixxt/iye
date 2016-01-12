@@ -1,4 +1,4 @@
-<form action="<%= key_path(key) %>" method="post" style="max-width: 500px; margin: 50px auto; text-align: center">
+<form action="<%= key_path(key) %>" method="post" style="max-width: 500px; margin: 50px auto; text-align: center" onsubmit="disableSubmit(event.target);">
   <input type="hidden" name="_method" value="delete" />
 
   <p>
