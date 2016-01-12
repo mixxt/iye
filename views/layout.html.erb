@@ -12,12 +12,12 @@
       <form action="<%= root_path %>" method="get">
         <label>
           Key:
-          <input name="filters[key]" type="text" value="<%= ERB::Util.html_escape filter_params["key"] %>" />
+          <input class="search" name="filters[key]" type="text" value="<%= ERB::Util.html_escape filter_params["key"] %>" />
         </label>
 
         <label>
           Text:
-          <input name="filters[text]" type="text" value="<%= ERB::Util.html_escape filter_params["text"] %>" />
+          <input class="search" name="filters[text]" type="text" value="<%= ERB::Util.html_escape filter_params["text"] %>" />
         </label>
 
         <label>
