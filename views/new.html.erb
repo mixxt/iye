@@ -1,4 +1,4 @@
-<form id="new-key-form" class="standalone-form" action="<%= root_path %>create" method="post" onsubmit="disableSubmit(event.target);">
+<form id="new-key-form" class="standalone-form" action="<%= root_path %>create" method="post" onsubmit="disableSubmit(event.target); rememberFileSelection(event.target);">
   <h2>Add new translation:</h2>
   <table>
     <tr>
@@ -24,3 +24,7 @@
   </table>
   <p><input class="btn btn-primary" type="submit" value="Create key"></p>
 </form>
+
+<script>
+  restoreFileSelection(document.getElementById("new-key-form"));
+</script>
