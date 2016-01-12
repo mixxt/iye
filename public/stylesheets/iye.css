@@ -43,6 +43,10 @@ body {
     padding-right:20px;
 }
 
+.search {
+    width: 200px;
+}
+
 /* BUTTONS */
 .btn {
     background: rgb(0, 90, 70);
