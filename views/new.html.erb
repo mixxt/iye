@@ -12,19 +12,26 @@
       </td>
     </tr>
     <tr>
-      <td>Key</td>
-      <td><input name='key[id]' type="text" size="60" autofocus onfocus="this.value = this.value" value="<%= ERB::Util.html_escape(String(request.params['key']).gsub(/^\^/, '')) %>"/></td>
+      <td>Global Key</td>
+      <td><input class="global_key" name='key[id]' type="text" size="60" autofocus onfocus="this.value = this.value;" value="<%= ERB::Util.html_escape(String(request.params['key']).gsub(/^\^/, '')) %>"/></td>
     </tr>
-  <% app.store.locales.each do |locale| %>
     <tr>
-      <td><%= locale.name %></td>
-      <td><textarea name='key[translations][<%= locale.id %>]' type="text" cols="60" rows="3"></textarea></td>
+      <td>Add Translation</td>
+      <td><a href="#" onclick="addTranslation();">+</a></td>
     </tr>
-  <% end %>
+    <tr id="translations">
+    </tr>
   </table>
   <p><input class="btn btn-primary" type="submit" value="Create key"></p>
 </form>
 
+<%
+  array = []
+  app.store.locales.each { |locale| array = array + [locale.id] }
+%>
+
 <script>
+  localStorage.setItem('locales', <%= array %>);
   restoreFileSelection(document.getElementById("new-key-form"));
+  $('#new_translation').click(addTranslation());
 </script>
