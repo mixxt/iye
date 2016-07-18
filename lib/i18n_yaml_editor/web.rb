@@ -95,20 +95,25 @@ module I18nYamlEditor
 
     # create single key
     post '/create' do
-      key_params = request.params['key']
-      translation_params = key_params.delete('translations')
+      translations = request.params['translations']
+      path_template = request.params['key']['path_template']
 
-      key = Key.new(id: key_params.fetch('id'), path_template: key_params.fetch('path_template'))
-      key_repository.create(key)
+      translations.each do |key, translation|
+        $message_key = Key.new(id: translation['key'], path_template: path_template)
+        key_repository.create($message_key)
 
-      translation_params.each do |locale_id, text|
-        locale = locale_repository.find(locale_id)
-        translation_repository.create Translation.new(locale_id: locale.id, key_id: key.id, text: text)
+        translation['locales'].each do |locale_id, text|
+          locale = locale_repository.find(locale_id)
+          translation_repository.create Translation.new(locale_id: locale.id, key_id: $message_key.id, text: text)
+        end
       end
+      key_array = $message_key.attributes[:id].split('.')
+      length = key_array.length - 1
+      key_array.slice!(length)
+      redirect_key = key_array.join
 
       app.persist_store
-
-      response.redirect show_key_path(key)
+      response.redirect show_key_path(redirect_key)
     end
 
     # index

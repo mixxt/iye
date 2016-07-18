@@ -2,9 +2,12 @@
   <h2>Add new translation:</h2>
   <table>
     <tr>
-      <td>File</td>
+      <td class="table-header">
+        File
+        <a href="#" title="This file is used for every translation you create on this page.">?</a>
+      </td>
       <td>
-        <select name='key[path_template]'>
+        <select name='key[path_template]' class="file_selection">
           <% app.store.path_templates.each do |path_template| %>
             <option value="<%=path_template%>"><%= path_template.gsub(app.base_path + '/', '') %></option>
           <% end %>
@@ -12,17 +15,20 @@
       </td>
     </tr>
     <tr>
-      <td>Global Key</td>
-      <td><input class="global_key" name='key[id]' type="text" size="60" autofocus onfocus="this.value = this.value;" value="<%= ERB::Util.html_escape(String(request.params['key']).gsub(/^\^/, '')) %>"/></td>
+      <td class="table-header">
+        Global Key
+        <a href="#" title="This is only used to copy it to the key input for a new translation">?</a>
+      </td>
+      <td><input class="key_input global_key" type="text" size="60" autofocus onfocus="this.value = this.value;" value="<%= ERB::Util.html_escape(String(request.params['key']).gsub(/^\^/, '')) %>"/></td>
     </tr>
     <tr>
-      <td>Add Translation</td>
+      <td class="table-header">Add translation</td>
       <td><a href="#" onclick="addTranslation();">+</a></td>
     </tr>
     <tr id="translations">
     </tr>
   </table>
-  <p><input class="btn btn-primary" type="submit" value="Create key"></p>
+  <p><input class="btn btn-primary" type="submit" value="Create key(s)"></p>
 </form>
 
 <%

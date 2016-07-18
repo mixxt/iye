@@ -154,10 +154,35 @@ table.categories tr.category.incomplete .key .text {
     padding: 20px;
     border-bottom: 1px solid #bbb;
 }
-.standalone-form table input, .new table select {
-    width: 100%;
-}
 .standalone-form table, .new table td {
     border: none;
     vertical-align: top;
+}
+
+.standalone-form table tbody > tr {
+    display: block;
+}
+
+.table-header {
+    width: 150px;
+}
+
+textarea.key_input {
+    height: 50px;
+}
+
+.file_selection {
+    width: 400px;
+}
+
+.key_input {
+    width: 400px;
+    line-height: 25px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 3px;
+}
+
+#translations table {
+    margin-top: 25px;
 }

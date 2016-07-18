@@ -31,15 +31,19 @@ function addTranslation() {
     var div = $('<table></table>')
         .addClass(('translation-' + translations))
         .appendTo('tr#translations');
-    var headline = $('<h3></h3>').text('Translation ' + translations).appendTo(div);
+    $('<h3></h3>').text('Translation ' + translations).appendTo(div);
     var row = $('<tr></tr>').appendTo(div);
 
-    var key_label = $('<td></td>')
+    $('<td></td>')
         .text('Key')
+        .addClass('table-header')
         .appendTo(row);
-    var key_input = $('<input />')
-        .addClass('new_translation')
-        .attr({'name': 'keys[id]', 'type': 'text', 'value': key, 'size': '60'})
+    if (translations == "1") {
+        key = key + "."
+    }
+    $('<input />')
+        .addClass('key_input new_translation')
+        .attr({'name': 'translations[' + translations + '[key]]', 'type': 'text', 'value': key, 'size': '60'})
         .appendTo($('<td></td>').appendTo(row));
 
     locales = localStorage.getItem('locales').split(',');
@@ -47,16 +51,31 @@ function addTranslation() {
 
     for(var i = 0; i < counter; i++)
     {
-        renderAllLocalfields(locales[i]);
+        renderAllLocalfields(locales[i], translations);
     }
+
+    var add_row = $('<tr></tr>').appendTo(div);
+    $('<td></td>')
+        .text('Add translation')
+        .addClass('table-header')
+        .appendTo(add_row);
+
+    var table_new = $('<td></td>')
+        .appendTo(add_row);
+
+    $('<a></a>')
+        .text('+')
+        .attr({'href': '#', 'onclick': 'addTranslation();'})
+        .appendTo(table_new);
 }
 
-function renderAllLocalfields(locale) {
+function renderAllLocalfields(locale, translations) {
     var tr = $('<tr></tr>');
-    var td_label = $('<td></td>').text(locale).appendTo(tr);
+    $('<td></td>').text(locale).addClass('table-header').appendTo(tr);
     var td_input = $('<td></td>').appendTo(tr);
     var textarea = $('<textarea></textarea>')
-        .attr({'name': 'key[translations][' + locale + ']', 'cols': '60', 'rows': '3'})
+        .addClass('key_input')
+        .attr({'name': 'translations[' + translations + '[locales[' + locale + ']]]', 'cols': '60', 'rows': '3'})
         .appendTo(td_input);
     var count = $('#translations').children().length;
     var appendElement = $('.translation-' + count)[0];
