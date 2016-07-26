@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
   s.add_dependency "hobbit-contrib", "~> 0.7.1"
   s.add_dependency "tilt", ">= 1.3"
   s.add_dependency 'bootstrap', '4.0.0.alpha3'
+  s.add_dependency 'haml', '4.0.7'
 
   s.add_development_dependency 'rake', '>= 10.4.2'
   s.add_development_dependency 'minitest', '>= 5.8.1'
