@@ -88,6 +88,10 @@ body {
     box-shadow: none;
 }
 
+.btn-custom {
+    margin: 10px 0 0 0;
+}
+
 /* TRANSLATIONS */
 table {
     width: 100%;
