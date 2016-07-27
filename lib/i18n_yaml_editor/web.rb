@@ -1,7 +1,7 @@
 require 'hobbit'
 require 'rack'
 require 'hobbit/render'
-require 'tilt/erb'
+require 'tilt/haml'
 
 require 'i18n_yaml_editor/app'
 
@@ -21,6 +21,12 @@ module I18nYamlEditor
       @iye_app = iye_app
     end
 
+    def template_engine
+      'haml'
+    end
+
+    Hobbit::Render
+
     ##
     # IYE app context
     #
@@ -34,7 +40,7 @@ module I18nYamlEditor
     end
 
     def default_layout
-      "#{views_path}/layout.html.#{template_engine}"
+      "#{views_path}/layout.html.haml"
     end
 
     ##

@@ -1,0 +1,41 @@
+%html
+  %head
+    %title
+      IYE
+    %link{ rel: 'stylesheet', media: 'screen', href: "#{root_path}stylesheets/iye.css" }
+    %script{ src: '//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js' }
+    %script{ src: "#{root_path}javascripts/iye.js" }
+
+  %body
+    .header
+      %h1
+        %a{ id: 'logo', href: root_path }
+          IYE
+
+      %form{ action: root_path, method: 'get'}
+        %label
+          Key:
+          %input{ name: 'filters[key]', type: 'text', value: ERB::Util.html_escape(filter_params["key"]) }
+
+        %label
+          Text:
+          %input{ name: 'filters[text]', type: 'text', value: ERB::Util.html_escape(filter_params["text"]) }
+
+        %label
+          %input{ name: 'filters[incomplete]', type: 'checkbox', checked: (filter_params["incomplete"] == "on" ? checked : '') }
+          Incomplete
+        %label
+          %input{ name: 'filters[empty]', type: 'checkbox', checked: (filter_params["empty"] == "on" ? checked : '') }
+          Empty
+
+        %input.btn.btn-primary.btn-small{ type: 'submit',  value:'Apply Filter' }
+
+      - if filter_params.any?
+        %form{ action: root_path, method: 'get'}
+          %input.btn.btn-text.btn-small{ type: 'submit', value: 'Clear Filter' }
+
+      %a.btn.pull-right{ href: "#{root_path}new?key=#{ERB::Util.html_escape filter_params['key']}"}
+        New Translation
+
+    .content
+      = yield

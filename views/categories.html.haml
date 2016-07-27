@@ -1,0 +1,6 @@
+%table.categories{ cellspacing: '0' }
+  - categories.each do |category|
+    %tr.category{ class: category.complete? ? 'incomplete' : '' }
+      %td.key
+        %a.text{ href: show_category_path(category) }
+          =category.name

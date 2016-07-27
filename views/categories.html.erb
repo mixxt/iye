@@ -1,9 +1,0 @@
-<table class="categories" cellspacing="0">
-  <% categories.each do |category| %>
-    <tr class="category <%= "incomplete" unless category.complete? %>">
-      <td class="key">
-        <a class="text" href="<%= show_category_path(category) %>"><%= category.name %></a>
-      </td>
-    </tr>
-  <% end %>
-</table>

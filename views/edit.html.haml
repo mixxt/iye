@@ -1,0 +1,10 @@
+%form#edit-key-form.standalone-form{ action: key_path(key), method: 'post', onsubmit: 'disableSubmit(event.target);' }
+  %input{ name: '_method', type: 'hidden', value: 'put' }
+  %h2 Edit key:
+  %table
+    %tr
+      %td Key
+      %td
+        %input{ autofocus: '', name: 'key[new_id]', onfocus: 'this.value = this.value', size: '60', type: 'text', value: ERB::Util.html_escape(key.id) }
+  %p
+    %input.btn.btn-primary{ type: 'submit', value: 'Update key' }
