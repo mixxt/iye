@@ -1,29 +1,34 @@
-%form#new-key-form.standalone-form{ action: "#{root_path}create", method: 'post', onsubmit: 'disableSubmit(event.target); rememberFileSelection(event.target);' }
-  %h2 Add new translation:
-  %table
-    %tr
-      %td.table-header
-        File
-        %a{ href: '#', title: 'This file is used for every translation you create on this page.' } ?
-      %td
-        %select.file_selection{name: 'key[path_template]'}
-          - app.store.path_templates.each do |path_template|
-            %option{ value: path_template }= path_template.gsub(app.base_path + '/', '')
-    %tr
-      %td.table-header
-        Global Key
-        %a{ href: '#', title: 'This is only used to copy it to the key input for a new translation' } ?
-      %td
-        %input.key_input.global_key{ autofocus: '', onfocus: 'this.value = this.value;', size: '60', type: 'text', value: ERB::Util.html_escape(String(request.params['key']).gsub(/^\^/, '')) }
-    %tr
-      %td.table-header Add translation
-      %td
-        %a.btn.btn-link{ href: '#', onclick: 'addTranslation();' } +
-    %tr#translations
-  %p
-    %input.btn.btn-primary{ type: 'submit', value: 'Create key(s)' }
-    
-- array = []
+%form#new-key-form.form-horizontal{ action: "#{root_path}create", method: 'post', onsubmit: 'disableSubmit(event.target); rememberFileSelection(event.target);' }
+  .page-header
+    %small Add new translation:
+  .form-group
+    %label.col-sm-2.control-label
+      File
+      %a{ href: '#', title: 'This file is used for every translation you create on this page.' } ?
+    .col-sm-10
+      %select.form-control{name: 'key[path_template]'}
+        - app.store.path_templates.each do |path_template|
+          %option{ value: path_template }= path_template.gsub(app.base_path + '/', '')
+  .form-group
+    %label.col-sm-2.control-label
+      Global Key
+      %a{ href: '#', title: 'This is only used to copy it to the key input for a new translation' } ?
+    .col-sm-10
+      %input.form-control.global_key{ autofocus: '', onfocus: 'this.value = this.value;', size: '60', type: 'text', value: ERB::Util.html_escape(String(request.params['key']).gsub(/^\^/, '')) }
+  .form-group
+    %label.col-sm-2.control-label
+      Add translations
+    .col-sm-10
+      %button.btn.btn-primary{ href: '#', onclick: 'addTranslation();' } +
+
+  #translations.form-group
+
+  .form-group
+    .col-sm-offset-2.col-sm-10
+      %button.btn.btn-primary{ type: 'submit' }
+        Create key(s)
+
+  - array = []
 - app.store.locales.each { |locale| array = array + [locale.id] }
 
 :javascript

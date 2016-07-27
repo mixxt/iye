@@ -43,6 +43,12 @@ body {
     padding-right:20px;
 }
 
+/* CONTENT */
+
+.content {
+    margin-top: 15px;
+}
+
 /* BUTTONS */
 .btn {
     background: rgb(0, 90, 70);
@@ -90,6 +96,18 @@ body {
 
 .btn-custom {
     margin: 10px 0 0 0;
+}
+
+.push-down {
+    margin-top: 10px;
+}
+
+.form-group:hover .hover-button {
+    visibility: visible;
+}
+
+.form-group .hover-button {
+    visibility: hidden;
 }
 
 /* TRANSLATIONS */
@@ -153,6 +171,15 @@ table.categories tr.category.incomplete .key .text {
 }
 
 /* NEW TRANSLATION FORM */
+
+tr.incomplete > td > a.translation_label {
+    border-bottom: 3px solid #F33;
+}
+
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+    padding: 0;
+    vertical-align: middle;
+}
 
 .standalone-form {
     padding: 20px;

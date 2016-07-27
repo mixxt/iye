@@ -30,7 +30,7 @@ function addTranslation() {
     translations++;
     var div = $('<table></table>')
         .addClass(('translation-' + translations))
-        .appendTo('tr#translations');
+        .appendTo('#translations');
     $('<h3></h3>').text('Translation ' + translations).appendTo(div);
     var row = $('<tr></tr>').appendTo(div);
 

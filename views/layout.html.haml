@@ -25,25 +25,26 @@
             %button.navbar-toggle.collapsed{ type: 'button', 'data-toggle': 'collapse', 'data-target': '#bs-example-navbar-collapse-1', 'aria-expanded': false }
               %span.sr-only Toggle navigation
             %a.navbar-brand{ href: root_path }IYE
-          #bs-example-navbar-collapse-1.collapse.navbar-collapse
+          .collapse.navbar-collapse
             %ul.nav.navbar-nav
               %form.navbar-form.navbar-left{ action: root_path, method: 'get'}
                 .form-group
-                  %input.form-control{ name: 'filters[key]', type: 'text', value: ERB::Util.html_escape(filter_params["key"]), placeholder: 'Key:' }
+                  %input.form-control{ name: 'filters[key]', type: 'text', value: ERB::Util.html_escape(filter_params["key"]), placeholder: 'Key' }
                 .form-group
-                  %input.form-control{ name: 'filters[text]', type: 'text', value: ERB::Util.html_escape(filter_params["text"]), placeholder: 'Text:' }
+                  %input.form-control{ name: 'filters[text]', type: 'text', value: ERB::Util.html_escape(filter_params["text"]), placeholder: 'Text' }
                 .form-group
-                  %input.form-control.checkbox{ name: 'filters[incomplete]', type: 'checkbox', checked: (filter_params["incomplete"] == "on" ? checked : '') }
+                  %input.form-control.checkbox{ name: 'filters[incomplete]', type: 'checkbox', checked: (filter_params["incomplete"] == "on" ? 'checked' : '') }
                   Incomplete
                 .form-group
-                  %input.form-control.checkbox{ name: 'filters[empty]', type: 'checkbox', checked: (filter_params["empty"] == "on" ? checked : '') }
+                  %input.form-control.checkbox{ name: 'filters[empty]', type: 'checkbox', checked: (filter_params["empty"] == "on" ? 'checked' : '') }
                   Empty
                 .btn-group.btn-group-sm
                   %input.btn.btn-primary{ type: 'submit',  value: 'Apply Filter' }
-
+            %ul.nav.navbar-nav
               - if filter_params.any?
-                %form{ action: root_path, method: 'get'}
-                  %input.btn.btn-text.btn-sm{ type: 'submit', value: 'Clear Filter' }
+                %form.navbar-form{ action: root_path, method: 'get'}
+                  .form-group.push-down
+                    %input.btn.btn-info.btn-sm{ type: 'submit', value: 'Clear Filter' }
             .btn-group.pull-right.btn-custom
               %a.btn.btn-success{ href: "#{root_path}new?key=#{ERB::Util.html_escape filter_params['key']}"}
                 New Translation

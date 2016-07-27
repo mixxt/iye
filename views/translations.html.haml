@@ -1,34 +1,32 @@
-%form#updateform{ action: "#{root_path}update", method: 'post', onsubmit: 'disableSubmit(event.target);' }
+%form.form-horizontal{ action: "#{root_path}update", method: 'post', onsubmit: 'disableSubmit(event.target);' }
   - filter_params.each do |filter, value|
     %input{name: "filters[#{filter}]", type: 'hidden', value: value}
-  %table.keys{ cellspacing: '0' }
-    - keys.each do |key|
+  - keys.each do |key|
+    .form-group
       - json_key = store.json_key?(key)
-      %tr.translation{ class: "#{store.key_complete?(key) ? 'incomplete' : ''} #{store.key_empty?(key) ? 'empty' : ''}"}
-        %td.key
-          %span.text= key.name
-        %td.translations
-          %table.locales
-            - translation_repository.all_for_key(key).each do |translation|
-              %tr
-                %td.locale
-                  = translation.locale_id
-                  :
-                %td.value
-                  - if json_key
-                    %span [JSON]
+      %label.col-sm-1.control-label.translation_label{ class: store.key_complete?(key) ? 'incomplete' : '' }
+        = key.name
+      .col-sm-9
+        %table
+          - translation_repository.all_for_key(key).each do |translation|
+            %tr
+              %td
+                = "#{translation.locale_id}:"
+              %td
+                - if json_key
+                  %span [JSON]
 
-                    %textarea{ cols: 80, rows: translation.number_of_lines, name: "translations[#{translation.id}][value]", dir: 'auto' }
-                      = translation.value.to_json
-                  - else
-                    %textarea{ cols: 80, rows: translation.number_of_lines, name: "translations[#{translation.id}][text]", dir: 'auto' }
-                      = Rack::Utils.escape_html translation.text
-        %td{ width: '1%' }
-          %a.btn.btn-small.hover-button{:href => edit_key_path(key)}
-            Rename
-        %td{ width: '1%' }
-          %a.btn.btn-danger.btn-small.hover-button{ href: destroy_key_path(key) }
-            Delete
+                  %textarea.form-control{ cols: 80, rows: translation.number_of_lines, name: "translations[#{translation.id}][value]", dir: 'auto' }
+                    = translation.value.to_json
+                - else
+                  %textarea.form-control{ cols: 80, rows: translation.number_of_lines, name: "translations[#{translation.id}][text]", dir: 'auto' }
+                    = Rack::Utils.escape_html translation.text
+      .col-sm-1
+        %a.btn.btn-sm.hover-button{:href => edit_key_path(key)}
+          Rename
+      .col-sm-1
+        %a.btn.btn-danger.btn-sm.hover-button{ href: destroy_key_path(key) }
+          Delete
   %p.pull-right
     %input#save.btn.btn-primary{type: 'submit', value: 'Save Translations'}
 - if keys.empty?
