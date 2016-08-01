@@ -1,17 +1,17 @@
-- multiline = false
+- c = 0
 - if !keys.empty?
   %form.form-horizontal{ action: "#{root_path}update", method: 'post', onsubmit: 'disableSubmit(event.target);' }
     - filter_params.each do |filter, value|
       %input{name: "filters[#{filter}]", type: 'hidden', value: value}
     - keys.each do |key|
-      .form-group
+      - c = c + 1
+      .form-group{ class: c == 1 ? 'first_key' : '' }
         - json_key = store.json_key?(key)
         %label.col-sm-3.control-label.translation_label{ class: store.key_complete?(key) ? 'incomplete' : '' }
           = key.name
         .col-sm-7
           %table
             - translation_repository.all_for_key(key).each do |translation|
-              - multiline = translation.number_of_lines > 1
               %tr
                 %td
                   = "#{translation.locale_id}:"
@@ -28,9 +28,7 @@
         .col-sm-1
           %a.btn.btn-danger.btn-sm.hover-button{ href: destroy_key_path(key) }
             Delete
-      - multiline ||= false
-      - if multiline
-        %hr
+      %hr
     %p.pull-right
       %input#save.btn.btn-primary{type: 'submit', value: 'Save Translations'}
 - else

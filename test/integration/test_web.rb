@@ -20,7 +20,7 @@ class TestWeb < CapybaraTest
     visit '/'
     within '.header' do
       page.fill_in('Key', with: 'key')
-      page.click_button 'Apply Filter'
+      click_button 'Apply Filter'
     end
 
     td = page.find('td.key')
@@ -32,7 +32,7 @@ class TestWeb < CapybaraTest
     visit '/'
     within '.header' do
       page.fill_in('Text', with: 'Wert')
-      page.click_button 'Apply Filter'
+      click_button 'Apply Filter'
     end
 
     td = page.find('td.key')
@@ -44,7 +44,7 @@ class TestWeb < CapybaraTest
     visit '/'
     within '.header' do
       page.fill_in('Key', with: 'unknown')
-      page.click_button 'Apply Filter'
+      click_button 'Apply Filter'
     end
 
     assert page.has_text?('Could not find any keys for your search.')
@@ -59,7 +59,7 @@ class TestWeb < CapybaraTest
 
     page.fill_in 'translations[de.key][text]', with: 'geänderter Wert'
     page.fill_in 'translations[en.key][text]', with: 'changed value'
-    page.click_button 'Save Translations'
+    click_button 'Save Translations'
 
     assert_equal 1, store.key_repository.count
     assert_equal 2, store.translation_repository.count
@@ -88,7 +88,7 @@ class TestWeb < CapybaraTest
   def test_key_deletion
     visit '/'
     click_link 'key'
-    within 'div.form-group' do
+    within 'div.first_key' do
       click_link 'Delete'
     end
     assert_equal 'http://iye.test/keys/destroy?key_id=key', current_url
@@ -107,19 +107,39 @@ class TestWeb < CapybaraTest
 
     visit '/'
     click_link 'key'
-    within 'div.form-group' do
+    within 'div.first_key' do
       click_link 'Rename'
     end
     assert_equal 'http://iye.test/keys/edit?key_id=key', current_url
 
     page.fill_in 'key[new_id]', with: 'renamed_key'
-    page.click_button 'Update key'
+    click_button 'Update key'
 
     assert_equal rename_calls.count, 1
     assert_equal rename_calls.first[0].class, Key
     assert_equal rename_calls.first[1], 'renamed_key'
 
     assert_equal 'http://iye.test/?filters[key]=%5Erenamed_key', current_url
+  end
+
+  def post_to_create
+    post '/create',
+         params: {
+             key: { "path_template": "#{root_path}example/%LOCALE%.yml" },
+             translations: {
+                 '1': { 'key': 'global_key.first', locales: { 'de': 'erster', en: 'first' }},
+                 '2': { 'key': 'global_key.second', 'locales': { 'de': 'zweiter', 'en': 'second' }}
+             }
+         }
+
+    assert_equal 'erster', store.translation_repository.find('de.global_key.first').value
+    assert_equal 'zweiter', store.translation_repository.find('de.global_key.second').value
+  end
+
+  private
+
+  def root_path
+    `pwd`.gsub('\n', '') + '../../'
   end
 
 end
