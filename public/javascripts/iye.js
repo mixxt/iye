@@ -43,7 +43,7 @@ function addTranslation() {
         .addClass('col-sm-2 control-label')
         .appendTo(row);
 
-    if (key.Length > 0) {
+    if (key.length > 0) {
         key = key + ".";
     }
 

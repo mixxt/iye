@@ -53,7 +53,7 @@ module I18nYamlEditor
     end
 
     def show_key_path(key)
-      "#{root_path}?#{Rack::Utils.build_nested_query(filters: { key: "^#{key.id}" })}"
+      "#{root_path}?#{Rack::Utils.build_nested_query(filters: { key: "^#{key}" })}"
     end
     alias_method :show_category_path, :show_key_path
 
@@ -114,10 +114,9 @@ module I18nYamlEditor
       key_array = $message_key.attributes[:id].split('.')
       length = key_array.length - 1
       key_array.slice!(length)
-      redirect_key = key_array.join
 
       app.persist_store
-      response.redirect show_key_path(redirect_key)
+      response.redirect show_key_path(key_array.join)
     end
 
     # index

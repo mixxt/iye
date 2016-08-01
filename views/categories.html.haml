@@ -2,5 +2,5 @@
   - categories.each do |category|
     %tr{ class: category.complete? ? 'incomplete' : '' }
       %td
-        %a.translation_label{ href: show_category_path(category) }
-          =category.name
+        %a.translation_label{ href: show_category_path(category.id) }
+          = category.name
