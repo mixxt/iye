@@ -31,10 +31,12 @@ module I18nYamlEditor
 
     def number_of_lines
       if text
-        text.scan(/\n/).size + 1
+        plain_size = text.scan(/\n/).size + 1
+        size = plain_size > 10 ? 10 : plain_size
       else
-        1
+        size = 1
       end
+      size
     end
 
     def text_present?

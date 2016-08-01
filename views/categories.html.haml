@@ -1,0 +1,6 @@
+%table.table.table-hover{ cellspacing: '0' }
+  - categories.each do |category|
+    %tr{ class: category.complete? ? 'incomplete' : '' }
+      %td
+        %a.translation_label{ href: show_category_path(category.id) }
+          = category.name

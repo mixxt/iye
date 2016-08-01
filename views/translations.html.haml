@@ -1,0 +1,38 @@
+- c = 0
+- if !keys.empty?
+  %form.form-horizontal{ action: "#{root_path}update", method: 'post', onsubmit: 'disableSubmit(event.target);' }
+    - filter_params.each do |filter, value|
+      %input{name: "filters[#{filter}]", type: 'hidden', value: value}
+    - keys.each do |key|
+      - c = c + 1
+      .form-group{ class: c == 1 ? 'first_key' : '' }
+        - json_key = store.json_key?(key)
+        %label.col-sm-3.control-label.translation_label{ class: store.key_complete?(key) ? 'incomplete' : '' }
+          = key.name
+        .col-sm-7
+          %table
+            - translation_repository.all_for_key(key).each do |translation|
+              %tr
+                %td
+                  = "#{translation.locale_id}:"
+                %td
+                  - if json_key
+                    %span [JSON]
+
+                    %textarea.form-control{ cols: 80, rows: translation.number_of_lines, name: "translations[#{translation.id}][value]", dirname: 'auto' }= translation.value.to_json
+                  - else
+                    %textarea.form-control{ cols: 80, rows: translation.number_of_lines, name: "translations[#{translation.id}][text]", dirname: 'auto' }= Rack::Utils.escape_html translation.text
+        .col-sm-1
+          %a.btn.btn-sm.hover-button{:href => edit_key_path(key)}
+            Rename
+        .col-sm-1
+          %a.btn.btn-danger.btn-sm.hover-button{ href: destroy_key_path(key) }
+            Delete
+      %hr
+    %p.pull-right
+      %input#save.btn.btn-primary{type: 'submit', value: 'Save Translations'}
+- else
+  %h3
+    Could not find any keys for your search.
+    %a{href: "#{root_path}new?key=#{filter_params['key']}"}
+      Create a new one

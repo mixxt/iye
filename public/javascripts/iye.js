@@ -28,51 +28,66 @@ function addTranslation() {
     var key = $('.global_key')[0].value;
     var translations = $('#translations').children().length;
     translations++;
-    var div = $('<table></table>')
-        .addClass(('translation-' + translations))
-        .appendTo('tr#translations');
-    $('<h3></h3>').text('Translation ' + translations).appendTo(div);
-    var row = $('<tr></tr>').appendTo(div);
+    var div = $('<div></div>')
+        .addClass(('translation-' + translations) + ' form-group')
+        .appendTo('#translations');
 
-    $('<td></td>')
+    var label_div = $('<div></div>').addClass('col-sm-12').appendTo(div);
+    var label = $('<label></label>').addClass('col-sm-2 control-label').appendTo(label_div);
+    var h1 = $('<h1></h1>').appendTo(label);
+    $('<small></small>').text('Translation ' + translations).appendTo(h1);
+    var row = $('<div></div>').addClass('form-group').appendTo(div);
+
+    $('<label></label>')
         .text('Key')
-        .addClass('table-header')
+        .addClass('col-sm-2 control-label')
         .appendTo(row);
-    if (translations == "1") {
-        key = key + "."
+
+    if (key.length > 0) {
+        key = key + ".";
     }
+
     $('<input />')
-        .addClass('key_input new_translation')
+        .addClass('key_input new_translation col-sm-10 form-control')
         .attr({'name': 'translations[' + translations + '[key]]', 'type': 'text', 'value': key, 'size': '60'})
-        .appendTo($('<td></td>').appendTo(row));
+        .appendTo($('<div></div>').addClass('col-sm-10').appendTo(row));
 
     locales = localStorage.getItem('locales').split(',');
     var counter = locales.length;
 
     for(var i = 0; i < counter; i++)
     {
-        renderAllLocalfields(locales[i], translations);
+        renderAllLocalfields(locales[i], translations, div);
     }
 
-    var add_row = $('<tr></tr>').appendTo(div);
-    $('<td></td>')
+    var add_row = $('<div></div>').addClass('form-group').appendTo(div);
+    $('<label></label>')
         .text('Add translation')
-        .addClass('table-header')
+        .addClass('col-sm-2 control-label')
         .appendTo(add_row);
 
-    var table_new = $('<td></td>')
+    var table_new = $('<div></div>')
+        .addClass('col-sm-10')
         .appendTo(add_row);
 
     $('<a></a>')
         .text('+')
+        .addClass('btn btn-primary')
         .attr({'href': '#', 'onclick': 'addTranslation();'})
         .appendTo(table_new);
 }
 
-function renderAllLocalfields(locale, translations) {
-    var tr = $('<tr></tr>');
-    $('<td></td>').text(locale).addClass('table-header').appendTo(tr);
-    var td_input = $('<td></td>').appendTo(tr);
+function renderAllLocalfields(locale, translations, div) {
+    var tr = $('<div></div>')
+        .addClass('form-group')
+        .appendTo(div);
+    $('<label></label>')
+        .text(locale)
+        .addClass('col-sm-2 control-label')
+        .appendTo(tr);
+    var td_input = $('<div></div>')
+        .addClass('col-sm-10')
+        .appendTo(tr);
     var textarea = $('<textarea></textarea>')
         .addClass('key_input')
         .attr({'name': 'translations[' + translations + '[locales[' + locale + ']]]', 'cols': '60', 'rows': '3'})

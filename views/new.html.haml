@@ -1,0 +1,37 @@
+%form#new-key-form.form-horizontal{ action: "#{root_path}create", method: 'post', onsubmit: 'disableSubmit(event.target); rememberFileSelection(event.target);' }
+  .page-header
+    %h2 Add new translation:
+  .form-group
+    %label.col-sm-2.control-label
+      File
+      %a{ href: '#', title: 'This file is used for every translation you create on this page.' } ?
+    .col-sm-10
+      %select.form-control{name: 'key[path_template]'}
+        - app.store.path_templates.each do |path_template|
+          %option{ value: path_template }= path_template.gsub(app.base_path + '/', '')
+  .form-group
+    %label.col-sm-2.control-label
+      Global Key
+      %a{ href: '#', title: 'This is only used to copy it to the key input for a new translation' } ?
+    .col-sm-10
+      %input.form-control.global_key{ autofocus: '', onfocus: 'this.value = this.value;', size: '60', type: 'text', value: ERB::Util.html_escape(String(request.params['key']).gsub(/^\^/, '')) }
+  .form-group
+    %label.col-sm-2.control-label
+      Add translations
+    .col-sm-10
+      %button.btn.btn-primary{ href: '#', onclick: 'addTranslation();' } +
+
+  #translations.form-group
+
+  .form-group
+    .col-sm-offset-2.col-sm-10
+      %button.btn.btn-primary{ type: 'submit' }
+        Create key(s)
+
+- array = []
+- app.store.locales.each { |locale| array = array + [locale.id] }
+
+:javascript
+  localStorage.setItem('locales', #{array});
+  restoreFileSelection(document.getElementById('new-key-form'));
+  $('#new_translation').click(addTranslation());

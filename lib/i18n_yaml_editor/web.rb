@@ -1,7 +1,7 @@
 require 'hobbit'
 require 'rack'
 require 'hobbit/render'
-require 'tilt/erb'
+require 'tilt/haml'
 
 require 'i18n_yaml_editor/app'
 
@@ -21,6 +21,10 @@ module I18nYamlEditor
       @iye_app = iye_app
     end
 
+    def template_engine
+      'haml'
+    end
+
     ##
     # IYE app context
     #
@@ -34,7 +38,7 @@ module I18nYamlEditor
     end
 
     def default_layout
-      "#{views_path}/layout.html.#{template_engine}"
+      "#{views_path}/layout.html.haml"
     end
 
     ##
@@ -49,7 +53,7 @@ module I18nYamlEditor
     end
 
     def show_key_path(key)
-      "#{root_path}?#{Rack::Utils.build_nested_query(filters: { key: "^#{key.id}" })}"
+      "#{root_path}?#{Rack::Utils.build_nested_query(filters: { key: "^#{key}" })}"
     end
     alias_method :show_category_path, :show_key_path
 
@@ -100,7 +104,11 @@ module I18nYamlEditor
 
       translations.each do |key, translation|
         $message_key = Key.new(id: translation['key'], path_template: path_template)
-        key_repository.create($message_key)
+        if $message_key.id.byteslice(-1) == '.'
+          raise TransformationError.new("Key can't have an . at the end")
+        else
+          key_repository.create($message_key)
+        end
 
         translation['locales'].each do |locale_id, text|
           locale = locale_repository.find(locale_id)
@@ -110,10 +118,9 @@ module I18nYamlEditor
       key_array = $message_key.attributes[:id].split('.')
       length = key_array.length - 1
       key_array.slice!(length)
-      redirect_key = key_array.join
 
       app.persist_store
-      response.redirect show_key_path(redirect_key)
+      response.redirect show_key_path(key_array.join)
     end
 
     # index
