@@ -25,8 +25,6 @@ module I18nYamlEditor
       'haml'
     end
 
-    Hobbit::Render
-
     ##
     # IYE app context
     #

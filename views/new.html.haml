@@ -1,6 +1,6 @@
 %form#new-key-form.form-horizontal{ action: "#{root_path}create", method: 'post', onsubmit: 'disableSubmit(event.target); rememberFileSelection(event.target);' }
   .page-header
-    %small Add new translation:
+    %h2 Add new translation:
   .form-group
     %label.col-sm-2.control-label
       File
@@ -28,7 +28,7 @@
       %button.btn.btn-primary{ type: 'submit' }
         Create key(s)
 
-  - array = []
+- array = []
 - app.store.locales.each { |locale| array = array + [locale.id] }
 
 :javascript

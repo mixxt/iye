@@ -29,14 +29,14 @@
             %ul.nav.navbar-nav
               %form.navbar-form.navbar-left{ action: root_path, method: 'get'}
                 .form-group
-                  %input.form-control{ name: 'filters[key]', type: 'text', value: ERB::Util.html_escape(filter_params["key"]), placeholder: 'Key' }
+                  %input.form-control{ name: 'filters[key]', type: 'text', size: 30, value: ERB::Util.html_escape(filter_params["key"]), placeholder: 'Key' }
                 .form-group
-                  %input.form-control{ name: 'filters[text]', type: 'text', value: ERB::Util.html_escape(filter_params["text"]), placeholder: 'Text' }
+                  %input.form-control{ name: 'filters[text]', type: 'text', size: 40, value: ERB::Util.html_escape(filter_params["text"]), placeholder: 'Text' }
                 .form-group
-                  %input.form-control.checkbox{ name: 'filters[incomplete]', type: 'checkbox', checked: (filter_params["incomplete"] == "on" ? 'checked' : '') }
+                  %input.form-control.checkbox{ name: 'filters[incomplete]', type: 'checkbox' }
                   Incomplete
                 .form-group
-                  %input.form-control.checkbox{ name: 'filters[empty]', type: 'checkbox', checked: (filter_params["empty"] == "on" ? 'checked' : '') }
+                  %input.form-control.checkbox{ name: 'filters[empty]', type: 'checkbox' }
                   Empty
                 .btn-group.btn-group-sm
                   %input.btn.btn-primary{ type: 'submit',  value: 'Apply Filter' }
