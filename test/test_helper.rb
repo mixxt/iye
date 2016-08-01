@@ -1,5 +1,6 @@
 require "minitest/autorun"
 require "capybara"
+require 'capybara/dsl'
 require "i18n_yaml_editor"
 
 class Minitest::Test

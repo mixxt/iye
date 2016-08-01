@@ -25,5 +25,5 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'rake', '>= 10.4.2'
   s.add_development_dependency 'minitest', '>= 5.8.1'
-  s.add_development_dependency 'capybara', '~> 2.5.0'
+  s.add_development_dependency 'capybara', '2.7.1'
 end
