@@ -104,7 +104,11 @@ module I18nYamlEditor
 
       translations.each do |key, translation|
         $message_key = Key.new(id: translation['key'], path_template: path_template)
-        key_repository.create($message_key)
+        if $message_key.id.byteslice(-1) == '.'
+          raise TransformationError.new("Key can't have an . at the end")
+        else
+          key_repository.create($message_key)
+        end
 
         translation['locales'].each do |locale_id, text|
           locale = locale_repository.find(locale_id)
