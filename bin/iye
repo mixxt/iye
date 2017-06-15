@@ -10,7 +10,16 @@ end
 require 'i18n_yaml_editor'
 require 'rack'
 
+options = {Port: 5050, Host: '127.0.0.1'}
+case ARGV[1]
+when "-b", "--binding", "--host"
+  options[:Host] = ARGV[2]
+when "-p", "--port"
+  options[:Port] = ARGV[2]
+end
+
 iye_app = I18nYamlEditor::App.new(source_folder)
 $stdout.puts " * Loading translations from #{iye_app.full_path}"
-$stdout.puts " * Starting web editor at port 5050"
-Rack::Server.start :app => I18nYamlEditor.endpoint_for_app(iye_app), :Port => 5050
+$stdout.puts " * Starting web editor at #{options[:Host]}:#{options[:Port]}"
+
+Rack::Server.start({app: I18nYamlEditor.endpoint_for_app(iye_app)}.merge(options))

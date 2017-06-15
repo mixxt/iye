@@ -1,6 +1,6 @@
 # IYE
 
-IYE - short for I18N YAML Editor - makes it easy to translate your Rails I18N files and 
+IYE - short for I18N YAML Editor - makes it easy to translate your Rails I18N files and
 keep them up to date. Unlike a lot of other tools in this space, IYE works directly on the
 YAML files instead of keeping a separate database in sync. This has several benefits:
 
@@ -21,25 +21,26 @@ You need to understand a few things about IYE for it to make sense, mainly:
 ## Workflow
 
 1. Install IYE:
-      
+
         $ gem install iye
 
 2. Navigate to the folder containing your YAML files and start IYE:
-    
-        $ iye .
+
+        $ iye . [-p 5050 -b 127.0.0.1]
 
     At this point IYE loads all translation keys for all locales, and creates any
     keys that might be missing for existing locales.
-  
+
 3. Point browser at [http://localhost:5050](http://localhost:5050)
 4. Make changes and press 'Save' - each time you do this, all the keys will be
    written to their original YAML files, which you can confirm e.g. by using
    `git diff`.
+5. Optionally you can change the port and binding address of the server by providing the `-p` and `-b` arguments
 
 ## Development
 
 The source ships with a `config.ru` suitable for development use with [shotgun](https://github.com/rtomayko/shotgun):
-    
+
     shotgun -p 5050
 
 To run tests:
